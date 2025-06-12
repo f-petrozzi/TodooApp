@@ -24,9 +24,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		D65D9ABD2DFA50990051945C /* Todoo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D65D9ACB2DFA509B0051945C /* TodooTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TodooTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D65D9AD52DFA509B0051945C /* TodooUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TodooUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D65D9ABD2DFA50990051945C /* Todoo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Todoo.app; path = /Users/fabriziopetrozzi/Desktop/Projects/Apps/Todoo/build/Debug/Todoo.app; sourceTree = "<absolute>"; };
+		D65D9ACB2DFA509B0051945C /* TodooTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TodooTests.xctest; path = /Users/fabriziopetrozzi/Desktop/Projects/Apps/Todoo/build/Debug/Todoo.app/Contents/PlugIns/TodooTests.xctest; sourceTree = "<absolute>"; };
+		D65D9AD52DFA509B0051945C /* TodooUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TodooUITests.xctest; path = "/Users/fabriziopetrozzi/Desktop/Projects/Apps/Todoo/build/Debug/TodooUITests-Runner.app/Contents/PlugIns/TodooUITests.xctest"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -66,18 +66,7 @@
 			isa = PBXGroup;
 			children = (
 				D65D9ABF2DFA50990051945C /* Todoo */,
-				D65D9ABE2DFA50990051945C /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		D65D9ABE2DFA50990051945C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				D65D9ABD2DFA50990051945C /* Todoo.app */,
-				D65D9ACB2DFA509B0051945C /* TodooTests.xctest */,
-				D65D9AD52DFA509B0051945C /* TodooUITests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -178,7 +167,7 @@
 			mainGroup = D65D9AB42DFA50990051945C;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = D65D9ABE2DFA50990051945C /* Products */;
+			productRefGroup = D65D9AB42DFA50990051945C;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
