@@ -35,16 +35,6 @@
 			path = Todoo;
 			sourceTree = "<group>";
 		};
-		D65D9ACE2DFA509B0051945C /* TodooTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TodooTests;
-			sourceTree = "<group>";
-		};
-		D65D9AD82DFA509B0051945C /* TodooUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TodooUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,8 +66,6 @@
 			isa = PBXGroup;
 			children = (
 				D65D9ABF2DFA50990051945C /* Todoo */,
-				D65D9ACE2DFA509B0051945C /* TodooTests */,
-				D65D9AD82DFA509B0051945C /* TodooUITests */,
 				D65D9ABE2DFA50990051945C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -130,9 +118,6 @@
 			dependencies = (
 				D65D9ACD2DFA509B0051945C /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				D65D9ACE2DFA509B0051945C /* TodooTests */,
-			);
 			name = TodooTests;
 			packageProductDependencies = (
 			);
@@ -152,9 +137,6 @@
 			);
 			dependencies = (
 				D65D9AD72DFA509B0051945C /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				D65D9AD82DFA509B0051945C /* TodooUITests */,
 			);
 			name = TodooUITests;
 			packageProductDependencies = (
@@ -403,6 +385,7 @@
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -442,6 +425,7 @@
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
