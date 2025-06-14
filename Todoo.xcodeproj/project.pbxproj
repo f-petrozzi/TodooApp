@@ -24,9 +24,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		D65D9ABD2DFA50990051945C /* Todoo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Todoo.app; path = /Users/fabriziopetrozzi/Desktop/Projects/Apps/Todoo/build/Debug/Todoo.app; sourceTree = "<absolute>"; };
-		D65D9ACB2DFA509B0051945C /* TodooTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TodooTests.xctest; path = /Users/fabriziopetrozzi/Desktop/Projects/Apps/Todoo/build/Debug/Todoo.app/Contents/PlugIns/TodooTests.xctest; sourceTree = "<absolute>"; };
-		D65D9AD52DFA509B0051945C /* TodooUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = TodooUITests.xctest; path = "/Users/fabriziopetrozzi/Desktop/Projects/Apps/Todoo/build/Debug/TodooUITests-Runner.app/Contents/PlugIns/TodooUITests.xctest"; sourceTree = "<absolute>"; };
+		D67B009A2DFDE93700A7A3C9 /* Todoo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D67B009B2DFDE93700A7A3C9 /* TodooTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TodooTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D67B009C2DFDE93700A7A3C9 /* TodooUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TodooUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -66,6 +66,9 @@
 			isa = PBXGroup;
 			children = (
 				D65D9ABF2DFA50990051945C /* Todoo */,
+				D67B009A2DFDE93700A7A3C9 /* Todoo.app */,
+				D67B009B2DFDE93700A7A3C9 /* TodooTests.xctest */,
+				D67B009C2DFDE93700A7A3C9 /* TodooUITests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -91,7 +94,7 @@
 			packageProductDependencies = (
 			);
 			productName = Todoo;
-			productReference = D65D9ABD2DFA50990051945C /* Todoo.app */;
+			productReference = D67B009A2DFDE93700A7A3C9 /* Todoo.app */;
 			productType = "com.apple.product-type.application";
 		};
 		D65D9ACA2DFA509B0051945C /* TodooTests */ = {
@@ -111,7 +114,7 @@
 			packageProductDependencies = (
 			);
 			productName = TodooTests;
-			productReference = D65D9ACB2DFA509B0051945C /* TodooTests.xctest */;
+			productReference = D67B009B2DFDE93700A7A3C9 /* TodooTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		D65D9AD42DFA509B0051945C /* TodooUITests */ = {
@@ -131,7 +134,7 @@
 			packageProductDependencies = (
 			);
 			productName = TodooUITests;
-			productReference = D65D9AD52DFA509B0051945C /* TodooUITests.xctest */;
+			productReference = D67B009C2DFDE93700A7A3C9 /* TodooUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
