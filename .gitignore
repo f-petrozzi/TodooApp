@@ -19,7 +19,7 @@ xcuserdata/
 .build/
 
 # App-specific
-hidden.plist
+Hidden.plist
 
 # CocoaPods (if used in future)
 Pods/
