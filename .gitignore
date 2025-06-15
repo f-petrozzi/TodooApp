@@ -1,0 +1,40 @@
+# macOS system files
+.DS_Store
+
+# Xcode
+DerivedData/
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xcuserstate
+
+# Swift Package Manager
+.build/
+
+# App-specific
+hidden.plist
+
+# CocoaPods (if used in future)
+Pods/
+
+# Carthage (if used in future)
+Carthage/
+
+# Fastlane (if used in future)
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Bundler (if used in future)
+.bundle
+
+# Environment
+.env
