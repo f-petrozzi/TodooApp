@@ -12,5 +12,4 @@ struct Note: Identifiable, Codable {
     var description: String
     var date: Date
     var isCompleted: Bool
-    
 }

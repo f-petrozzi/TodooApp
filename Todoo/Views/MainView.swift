@@ -10,6 +10,7 @@ import SwiftUI
 struct MainView: View {
     @StateObject var viewModel = NoteViewModel()
     @State private var showingAddNote = false
+    @State private var showingGenerate = false
     
     var body: some View {
         NavigationView {
@@ -42,14 +43,24 @@ struct MainView: View {
             }
             .navigationTitle("Todoo")
             .toolbar {
-                Button(action: {
-                    showingAddNote = true
-                }) {
-                    Image(systemName: "plus")
+                HStack {
+                    Button(action: {
+                        showingGenerate = true
+                    }) {
+                        Image(systemName: "sparkles")
+                    }
+                    Button(action: {
+                        showingAddNote = true
+                    }){
+                        Image(systemName: "plus")
+                    }
                 }
             }
             .sheet(isPresented: $showingAddNote) {
                 AddNoteView(viewModel: viewModel)
+            }
+            .sheet(isPresented: $showingGenerate) {
+                GenerateNotesView(viewModel: viewModel)
             }
         }
     }

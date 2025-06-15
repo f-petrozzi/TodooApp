@@ -1,5 +1,5 @@
 # macOS system files
-.DS_Store
+**/.DS_Store
 
 # Xcode
 DerivedData/
@@ -37,4 +37,5 @@ fastlane/test_output
 .bundle
 
 # Environment
-.env
+*.log
+*.env

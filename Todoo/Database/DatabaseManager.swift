@@ -49,7 +49,7 @@ class DatabaseManager {
         var createTableStatement: OpaquePointer?
         
         if sqlite3_prepare_v2(db, createTableQuery, -1, &createTableStatement, nil) == SQLITE_OK {
-            if sqlite3_step(createTableStatement) != SQLITE_DONE {
+            if sqlite3_step(createTableStatement) == SQLITE_DONE {
                 print("Notes table created successfully.")
             } else {
                 print("Failed to create notes table.")
