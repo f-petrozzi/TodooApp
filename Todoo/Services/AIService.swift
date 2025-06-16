@@ -27,8 +27,20 @@ class AIService {
             "Authorization": "Bearer \(apiKey)"
         ]
         
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        let now = formatter.string(from:Date())
+        
         let messages: [[String: String]] = [
-            ["role": "system", "content": "You are an assistant that generates to-do items in pure JSON format. Each item must include a title, description, date in full ISO 8601 format (e.g., 2022-03-30T10:00:00Z), and isCompleted (true or false). Only return the JSON array. Do not include text or formatting."],
+            ["role": "system", "content": """
+             The current date and time is \(now). Please generate to-do notes in pure JSON format. Each note should include:
+             - "title": a short title
+             - "description": a short task description
+             - "date": today's date and time in ISO8601 format (e.g. 2025-07-01T12:00:00Z)
+             - "isCompleted": false (unless specified otherwise)
+
+             Output only the JSON array, no explanation, no other words.
+             """],
             ["role": "user", "content": prompt]
         ]
         
