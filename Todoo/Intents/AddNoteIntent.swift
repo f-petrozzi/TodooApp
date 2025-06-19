@@ -6,10 +6,12 @@
 //
 
 import AppIntents
+import Foundation
 
 struct AddNoteIntent: AppIntent {
-    static var title = LocalizedStringResource("Add a Note")
-    static var description = IntentDescription("Add a new note to Todoo")
+    static let title = LocalizedStringResource("Add a Note")
+    static let description = IntentDescription("Add a new note to Todoo")
+    static let openAppWhenRun: Bool = true
 
     @Parameter(title: "Title")
     var title: String
@@ -21,7 +23,8 @@ struct AddNoteIntent: AppIntent {
         Summary("Add a note titled \(\.$title) with \(\.$noteDescription)")
     }
 
-    func perform() async throws -> some IntentResult {
+    @MainActor
+    func perform() async throws -> some IntentResult & ProvidesDialog {
         let note = Note(
             title: title,
             description: noteDescription,
@@ -29,6 +32,8 @@ struct AddNoteIntent: AppIntent {
             isCompleted: false
         )
         DatabaseManager.shared.insertNote(note)
-        return .result(value: "Note added to Todoo")
+        return .result(
+            dialog: IntentDialog(stringLiteral: "Added a note titled \(title)")
+        )
     }
 }

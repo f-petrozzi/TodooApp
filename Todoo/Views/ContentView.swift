@@ -18,5 +18,3 @@ struct ContentView: View {
 #Preview {
     MainView()
 }
-
-

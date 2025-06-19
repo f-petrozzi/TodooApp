@@ -4,14 +4,14 @@
 //
 //  Created by Fabrizio Petrozzi on 6/15/25.
 //
-
 import SwiftUI
+import UIKit
 
 struct MainView: View {
     @StateObject var viewModel = NoteViewModel()
     @State private var showingAddNote = false
     @State private var showingGenerate = false
-    
+
     var body: some View {
         NavigationView {
             List {
@@ -22,20 +22,32 @@ struct MainView: View {
                                 .font(.headline)
                             Text(note.description)
                                 .font(.subheadline)
-                            Text(note.date.formatted(date: .abbreviated, time: .shortened))
-                                .font(.caption)
+                            Text(
+                                note.date
+                                    .formatted(
+                                        date: .abbreviated,
+                                        time: .shortened
+                                    )
+                            )
+                            .font(.caption)
                         }
                         Spacer()
-                        Button(action: {
+                        Button {
                             viewModel.toggleComplete(note: note)
-                        }) {
-                            Image(systemName: note.isCompleted ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(note.isCompleted ? .green : .gray)
+                        } label: {
+                            Image(
+                                systemName: note.isCompleted
+                                    ? "checkmark.circle.fill"
+                                    : "circle"
+                            )
+                            .foregroundColor(
+                                note.isCompleted ? .green : .gray
+                            )
                         }
                     }
                 }
                 .onDelete { indexSet in
-                    indexSet.forEach { i in
+                    for i in indexSet {
                         let note = viewModel.notes[i]
                         viewModel.deleteNote(id: note.id)
                     }
@@ -44,14 +56,14 @@ struct MainView: View {
             .navigationTitle("Todoo")
             .toolbar {
                 HStack {
-                    Button(action: {
+                    Button {
                         showingGenerate = true
-                    }) {
+                    } label: {
                         Image(systemName: "sparkles")
                     }
-                    Button(action: {
+                    Button {
                         showingAddNote = true
-                    }){
+                    } label: {
                         Image(systemName: "plus")
                     }
                 }
@@ -62,6 +74,18 @@ struct MainView: View {
             .sheet(isPresented: $showingGenerate) {
                 GenerateNotesView(viewModel: viewModel)
             }
+        }
+        .onAppear {
+            viewModel.fetchNotes()
+        }
+        .onReceive(
+            NotificationCenter
+                .default
+                .publisher(
+                    for: UIApplication.didBecomeActiveNotification
+                )
+        ) { _ in
+            viewModel.fetchNotes()
         }
     }
 }
