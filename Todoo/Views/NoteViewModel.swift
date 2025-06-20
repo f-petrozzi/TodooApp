@@ -47,4 +47,3 @@ class NoteViewModel: ObservableObject {
         fetchNotes()
     }
 }
-
