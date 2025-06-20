@@ -12,6 +12,7 @@ struct TodooApp: App {
     var body: some Scene {
         WindowGroup {
             MainView()
+                .accentColor(Theme.accent)
         }
     }
 }

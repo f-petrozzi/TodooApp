@@ -7,43 +7,60 @@
 import Foundation
 
 class NoteViewModel: ObservableObject {
-    @Published var notes = [Note]()
+  @Published var notes: [Note] = []
 
-    init() {
-        fetchNotes()
-    }
+  private let dbQueue = DispatchQueue(label: "com.yourapp.sqliteQueue",
+                                      qos: .userInitiated)
 
-    func fetchNotes() {
-        notes = DatabaseManager.shared.getAllNotes()
-    }
+  init() {
+    fetchNotes()
+  }
 
-    func addNote(
-        title: String,
-        description: String,
-        date: Date,
-        parentId: Int32? = nil
-    ) {
-        let newNote = Note(
-            id: 0,
-            parentId: parentId,
-            title: title,
-            description: description,
-            date: date,
-            isCompleted: false
-        )
-        DatabaseManager.shared.insertNote(newNote)
-        fetchNotes()
+  func fetchNotes() {
+    dbQueue.async {
+      let all = DatabaseManager.shared.getAllNotes()
+      DispatchQueue.main.async {
+        self.notes = all
+      }
     }
+  }
 
-    func deleteNote(id: Int32) {
-        DatabaseManager.shared.deleteNote(id: id)
-        fetchNotes()
+  func addNote(title: String, description: String, date: Date, parentId: Int32?) {
+    let newNote = Note(id: 0,
+                       parentId: parentId,
+                       title: title,
+                       description: description,
+                       date: date,
+                       isCompleted: false)
+                       
+    dbQueue.async {
+      DatabaseManager.shared.insertNote(newNote)
+      let all = DatabaseManager.shared.getAllNotes()
+      DispatchQueue.main.async {
+        self.notes = all
+      }
     }
+  }
 
-    func toggleComplete(note: Note) {
-        var updated = note
-        updated.isCompleted.toggle()
-        DatabaseManager.shared.updateNote(updated)
-        fetchNotes()
+  func deleteNote(id: Int32) {
+    dbQueue.async {
+      DatabaseManager.shared.deleteNote(id: id)
+      let all = DatabaseManager.shared.getAllNotes()
+      DispatchQueue.main.async {
+        self.notes = all
+      }
     }
+  }
+
+  func toggleComplete(note: Note) {
+    var updated = note
+    updated.isCompleted.toggle()
+    dbQueue.async {
+      DatabaseManager.shared.updateNote(updated)
+      let all = DatabaseManager.shared.getAllNotes()
+      DispatchQueue.main.async {
+        self.notes = all
+      }
+    }
+  }
 }
