@@ -15,34 +15,29 @@ struct MainView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(viewModel.notes) { note in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(note.title)
-                                .font(.headline)
-                            Text(note.description)
-                                .font(.subheadline)
-                            Text(
-                                note.date
-                                    .formatted(
-                                        date: .abbreviated,
-                                        time: .shortened
-                                    )
-                            )
-                            .font(.caption)
-                        }
-                        Spacer()
-                        Button {
-                            viewModel.toggleComplete(note: note)
-                        } label: {
-                            Image(
-                                systemName: note.isCompleted
+                ForEach(viewModel.notes.filter { $0.parentId == nil }) { note in
+                    NavigationLink(destination: SublistView(
+                        viewModel: viewModel,
+                        parent: note
+                    )) {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(note.title)
+                                Text(note.description).font(.subheadline)
+                                Text(note.date.formatted(
+                                    date: .abbreviated,
+                                    time: .shortened
+                                ))
+                            }
+                            Spacer()
+                            Button {
+                                viewModel.toggleComplete(note: note)
+                            } label: {
+                                Image(systemName: note.isCompleted
                                     ? "checkmark.circle.fill"
                                     : "circle"
-                            )
-                            .foregroundColor(
-                                note.isCompleted ? .green : .gray
-                            )
+                                )
+                            }
                         }
                     }
                 }
@@ -69,7 +64,7 @@ struct MainView: View {
                 }
             }
             .sheet(isPresented: $showingAddNote) {
-                AddNoteView(viewModel: viewModel)
+                AddNoteView(viewModel: viewModel, parentId: nil)
             }
             .sheet(isPresented: $showingGenerate) {
                 GenerateNotesView(viewModel: viewModel)

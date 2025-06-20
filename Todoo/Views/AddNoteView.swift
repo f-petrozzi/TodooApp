@@ -11,10 +11,12 @@ struct AddNoteView: View {
     @Environment(\.dismiss) var dismiss
     @ObservedObject var viewModel: NoteViewModel
     
+    var parentId: Int32?
+
     @State private var title = ""
     @State private var description = ""
     @State private var date = Date()
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -26,7 +28,12 @@ struct AddNoteView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        viewModel.addNote(title: title, description: description, date: date)
+                        viewModel.addNote(
+                            title: title,
+                            description: description,
+                            date: date,
+                            parentId: parentId 
+                        )
                         dismiss()
                     }
                 }

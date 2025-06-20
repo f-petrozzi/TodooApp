@@ -39,10 +39,12 @@ class DatabaseManager {
         let createTableQuery = """
         CREATE TABLE IF NOT EXISTS Notes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            parentId INTEGER,
             title TEXT NOT NULL,
             description TEXT,
             date TEXT,
-            isCompleted INTEGER
+            isCompleted INTEGER,
+            FOREIGN KEY(parentId) REFERENCES Notes(id)
         );
         """
         
@@ -62,57 +64,82 @@ class DatabaseManager {
     }
     
     func insertNote(_ note: Note) {
-        let insertSQL = "INSERT INTO Notes (title, description, date, isCompleted) VALUES (?, ?, ?, ?)"
+        let insertSQL = "INSERT INTO Notes (parentId, title, description, date, isCompleted) VALUES (?, ?, ?, ?, ?)"
         var stmt:OpaquePointer?
         
         if sqlite3_prepare_v2(db, insertSQL, -1, &stmt, nil) == SQLITE_OK {
-            sqlite3_bind_text(stmt, 1, (note.title as NSString).utf8String, -1, nil)
-            sqlite3_bind_text(stmt, 2, (note.description as NSString).utf8String, -1, nil)
-            
-            // Date
-            let dateString = ISO8601DateFormatter().string(from: note.date)
-            sqlite3_bind_text(stmt, 3, (dateString as NSString).utf8String, -1, nil)
-            
-            //Bool
-            sqlite3_bind_int(stmt, 4, note.isCompleted ? 1 : 0)
-            
-            if sqlite3_step(stmt) == SQLITE_DONE {
-                print("Inserted note")
+                if let pid = note.parentId {
+                    sqlite3_bind_int(stmt, 1, pid)
+                } else {
+                    sqlite3_bind_null(stmt, 1)
+                }
+                sqlite3_bind_text(stmt, 2, (note.title as NSString).utf8String, -1, nil)
+                sqlite3_bind_text(stmt, 3, (note.description as NSString).utf8String, -1, nil)
+                
+                let dateString = ISO8601DateFormatter().string(from: note.date)
+                sqlite3_bind_text(stmt, 4, (dateString as NSString).utf8String, -1, nil)
+                
+                sqlite3_bind_int(stmt, 5, note.isCompleted ? 1 : 0)
+                
+                if sqlite3_step(stmt) == SQLITE_DONE {
+                    print("Inserted note")
+                } else {
+                    print("Could not insert note")
+                }
             } else {
-                print("Could not insert note")
+                print("Could not prepare INSERT statement")
             }
-        } else {
-            print("Could not prepare INSERT statement")
-        }
-        
-        sqlite3_finalize(stmt)
+            
+            sqlite3_finalize(stmt)
     }
     
     func getAllNotes() -> [Note] {
         var notes: [Note] = []
-        let querySQL = "SELECT * FROM Notes;"
+        let querySQL = """
+            SELECT
+              id,
+              parentId,
+              title,
+              description,
+              date,
+              isCompleted
+            FROM Notes
+            """
         var stmt: OpaquePointer?
         
         if sqlite3_prepare_v2(db, querySQL, -1, &stmt, nil) == SQLITE_OK {
             while sqlite3_step(stmt) == SQLITE_ROW {
                 let id = sqlite3_column_int(stmt, 0)
-                let title = String(cString: sqlite3_column_text(stmt, 1))
-                let description = String(cString: sqlite3_column_text(stmt, 2))
-                let dateString = String(cString: sqlite3_column_text(stmt, 3))
-                let isCompleted = sqlite3_column_int(stmt, 4) == 1
                 
-                // String Date
+                let parentId: Int32? = sqlite3_column_type(stmt, 1) != SQLITE_NULL
+                    ? sqlite3_column_int(stmt, 1)
+                    : nil
+                
+                let title = String(cString: sqlite3_column_text(stmt, 2))
+                let description = String(cString: sqlite3_column_text(stmt, 3))
+                let dateString = String(cString: sqlite3_column_text(stmt, 4))
+                let isCompleted = sqlite3_column_int(stmt, 5) == 1
+                
                 let date = ISO8601DateFormatter().date(from: dateString) ?? Date()
                 
-                let note = Note(id: id, title: title, description: description, date: date, isCompleted: isCompleted)
+                let note = Note(
+                  id: id,
+                  parentId: parentId,
+                  title: title,
+                  description: description,
+                  date: date,
+                  isCompleted: isCompleted
+                )
                 notes.append(note)
             }
         } else {
             print("SELECT statement could not be prepared")
         }
+        
         sqlite3_finalize(stmt)
         return notes
     }
+
 
     func updateNote(_ note: Note) {
         let updateSQL = "UPDATE Notes SET title = ?, description = ?, date = ?, isCompleted = ? WHERE id = ?;"
