@@ -2,23 +2,21 @@
 //  MainView.swift
 //  Todoo
 //
-//  Created by Fabrizio Petrozzi on 6/15/25.
+//  Created by Fabrizio Petrozzi on 6/15/25
 //
 import SwiftUI
 
 struct MainView: View {
-    @StateObject var viewModel = NoteViewModel()
+    @StateObject private var viewModel = NoteViewModel()
     @State private var showingAddNote = false
     @State private var showingGenerate = false
     @State private var currentParentId: Int32? = nil
     @State private var expandedParents = Set<Int32>()
 
-    private static let dateFormatter: DateFormatter = {
-        let df = DateFormatter()
-        df.dateStyle = .medium
-        df.timeStyle = .short
-        return df
-    }()
+    private static let dateFormatter = DateFormatter().configured {
+        $0.dateStyle = .medium
+        $0.timeStyle = .short
+    }
 
     var body: some View {
         NavigationView {
@@ -28,15 +26,15 @@ struct MainView: View {
 
                     HStack {
                         if note.description.isEmpty {
-                          VStack(alignment: .leading, spacing: Theme.vPadding) {
-                            Text(note.title)
-                              .font(.title2.weight(.semibold))
-                              .foregroundColor(.primary)
-                            Text(Self.dateFormatter.string(from: note.date))
-                              .font(Theme.subheadlineFont)
-                              .foregroundColor(.secondary)
-                          }
-                          .frame(maxWidth: .infinity, minHeight: 80, alignment: .leading)
+                            VStack(alignment: .leading, spacing: Theme.vPadding) {
+                                Text(note.title)
+                                    .font(.title2.weight(.semibold))
+                                    .foregroundColor(.primary)
+                                Text(Self.dateFormatter.string(from: note.date))
+                                    .font(Theme.subheadlineFont)
+                                    .foregroundColor(.secondary)
+                            }
+                            .frame(maxWidth: .infinity, minHeight: 80, alignment: .leading)
                         } else {
                             VStack(alignment: .leading, spacing: Theme.vPadding) {
                                 Text(note.title)
@@ -173,12 +171,21 @@ struct MainView: View {
             .accentColor(Theme.accent)
             .sheet(isPresented: $showingAddNote) {
                 AddNoteView(viewModel: viewModel, parentId: nil)
+                    .popupStyle()
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.hidden)
             }
             .sheet(isPresented: $showingGenerate) {
                 GenerateNotesView(viewModel: viewModel)
+                    .popupStyle()
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.hidden)
             }
             .sheet(item: $currentParentId) { parentId in
                 AddNoteView(viewModel: viewModel, parentId: parentId)
+                    .popupStyle()
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.hidden)
             }
         }
         .onAppear {
@@ -190,6 +197,13 @@ struct MainView: View {
     }
 }
 
-extension Int32: @retroactive Identifiable {
+extension Int32: Identifiable {
     public var id: Int32 { self }
+}
+
+private extension DateFormatter {
+    func configured(_ block: (DateFormatter) -> Void) -> DateFormatter {
+        block(self)
+        return self
+    }
 }

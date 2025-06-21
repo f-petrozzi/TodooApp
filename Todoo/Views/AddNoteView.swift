@@ -17,28 +17,42 @@ struct AddNoteView: View {
 
     var body: some View {
         NavigationView {
-            VStack(spacing: Theme.vPadding) {
+            VStack(spacing: 12) {
                 TextField(
-                    parentId == nil ? "Note Title" : "Subnote",
+                    parentId == nil ? "Title" : "Subnote",
                     text: $title
                 )
-                .textFieldStyle()
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .cornerRadius(8)
 
                 if parentId == nil {
-                    TextEditor(text: $description)
-                        .textFieldStyle()
-                        .frame(height: 100)
+                    ZStack(alignment: .topLeading) {
+                        TextEditor(text: $description)
+                            .padding(12)
 
+                        if description.isEmpty {
+                            Text("Description")
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 20)
+                        }
+                    }
+                    .frame(height: 100)
+                    .cornerRadius(8)
+                }
+
+                if parentId == nil {
                     DatePicker(
                         "",
                         selection: $date,
                         displayedComponents: [.date, .hourAndMinute]
                     )
                     .datePickerStyle(.compact)
-                    .tint(Theme.accent)
+                    .padding(.horizontal, 16)
                 }
 
-                Button("Add") {
+                Button(action: {
                     viewModel.addNote(
                         title: title,
                         description: description,
@@ -46,12 +60,19 @@ struct AddNoteView: View {
                         parentId: parentId
                     )
                     dismiss()
+                }) {
+                    Text("Add")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Theme.accent)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
                 }
-                .primaryButtonStyle()
+                .padding(.horizontal, 16)
 
                 Spacer()
             }
-            .padding(.horizontal, Theme.hPadding)
+            .padding(.top, 16)
             .navigationTitle(parentId == nil ? "Add Note" : "Add Subnote")
             .accentColor(Theme.accent)
         }

@@ -17,51 +17,44 @@ struct GenerateNotesView: View {
     @State private var showToast = false
 
     var body: some View {
-        ZStack {
-            NavigationView {
-                VStack(spacing: Theme.vPadding) {
-                    ZStack(alignment: .topLeading) {
-                        if prompt.isEmpty {
-                            Text("Enter prompt")
-                                .font(Theme.bodyFont)
-                                .foregroundColor(.gray)
-                                .padding(.horizontal, Theme.hPadding)
-                                .padding(.vertical, Theme.vPadding)
-                        }
-                        TextEditor(text: $prompt)
-                            .textFieldStyle()
-                            .frame(height: 80)
-                    }
+        NavigationView {
+            VStack(spacing: Theme.vPadding) {
+                ZStack(alignment: .topLeading) {
+                  TextEditor(text: $prompt)
+                    .frame(height: 80)
 
-                    Button(action: generateNotes) {
-                        if isLoading {
-                            ProgressView()
-                                .progressViewStyle(
-                                    CircularProgressViewStyle(tint: Theme.accent)
-                                )
-                                .frame(maxWidth: .infinity)
-                        } else {
-                            Text("Generate")
-                                .font(Theme.bodyFont)
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
-                    .primaryButtonStyle()
+                  if prompt.isEmpty {
+                    Text("Enter prompt")
+                      .font(Theme.bodyFont)
+                      .foregroundColor(.secondary)
+                      .padding(.horizontal, 4)
+                      .padding(.vertical, 8)
+                  }
+                }
 
-                    Spacer()
-                }
-                .padding(.horizontal, Theme.hPadding)
-                .navigationTitle("AI Notes")
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Close") { dismiss() }
+                Button(action: generateNotes) {
+                    if isLoading {
+                        ProgressView()
+                            .progressViewStyle(
+                                CircularProgressViewStyle(tint: Theme.accent)
+                            )
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        Text("Generate")
+                            .font(Theme.bodyFont)
+                            .frame(maxWidth: .infinity)
                     }
                 }
-                .alert("Error", isPresented: $showErrorAlert) {
-                    Button("OK", role: .cancel) {}
-                } message: {
-                    Text(errorMessage ?? "Something went wrong.")
-                }
+                .primaryButtonStyle()
+
+                Spacer()
+            }
+            .padding(.horizontal, Theme.hPadding)
+            .navigationTitle("AI Notes")
+            .alert("Error", isPresented: $showErrorAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(errorMessage ?? "Something went wrong.")
             }
         }
         .safeAreaInset(edge: .top) {
