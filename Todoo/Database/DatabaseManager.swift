@@ -92,7 +92,7 @@ class DatabaseManager {
             
             sqlite3_finalize(stmt)
     }
-    
+   
     func getAllNotes() -> [Note] {
         var notes: [Note] = []
         let querySQL = """
@@ -105,39 +105,76 @@ class DatabaseManager {
               isCompleted
             FROM Notes
             """
-        var stmt: OpaquePointer?
-        
-        if sqlite3_prepare_v2(db, querySQL, -1, &stmt, nil) == SQLITE_OK {
-            while sqlite3_step(stmt) == SQLITE_ROW {
-                let id = sqlite3_column_int(stmt, 0)
-                
-                let parentId: Int32? = sqlite3_column_type(stmt, 1) != SQLITE_NULL
+            var stmt: OpaquePointer?
+            
+            if sqlite3_prepare_v2(db, querySQL, -1, &stmt, nil) == SQLITE_OK {
+                while sqlite3_step(stmt) == SQLITE_ROW {
+                    let id = sqlite3_column_int(stmt, 0)
+                    
+                    let parentId: Int32? = sqlite3_column_type(stmt, 1) != SQLITE_NULL
                     ? sqlite3_column_int(stmt, 1)
                     : nil
-                
-                let title = String(cString: sqlite3_column_text(stmt, 2))
-                let description = String(cString: sqlite3_column_text(stmt, 3))
-                let dateString = String(cString: sqlite3_column_text(stmt, 4))
-                let isCompleted = sqlite3_column_int(stmt, 5) == 1
-                
-                let date = ISO8601DateFormatter().date(from: dateString) ?? Date()
-                
-                let note = Note(
-                  id: id,
-                  parentId: parentId,
-                  title: title,
-                  description: description,
-                  date: date,
-                  isCompleted: isCompleted
-                )
-                notes.append(note)
+                    
+                    let title = String(cString: sqlite3_column_text(stmt, 2))
+                    let description = String(cString: sqlite3_column_text(stmt, 3))
+                    let dateString = String(cString: sqlite3_column_text(stmt, 4))
+                    let isCompleted = sqlite3_column_int(stmt, 5) == 1
+                    
+                    let date = ISO8601DateFormatter().date(from: dateString) ?? Date()
+                    
+                    let note = Note(
+                        id: id,
+                        parentId: parentId,
+                        title: title,
+                        description: description,
+                        date: date,
+                        isCompleted: isCompleted
+                    )
+                    notes.append(note)
+                }
+            } else {
+                print("SELECT statement could not be prepared")
             }
-        } else {
-            print("SELECT statement could not be prepared")
+            
+            sqlite3_finalize(stmt)
+            return notes
         }
-        
-        sqlite3_finalize(stmt)
-        return notes
+    
+    func getNote(id: Int32) -> Note? {
+        let sql = """
+          SELECT id, parentId, title, description, date, isCompleted
+            FROM Notes
+           WHERE id = ?
+        """
+        var stmt: OpaquePointer?
+        guard sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK else {
+            print("Couldn’t prepare getNote")
+            return nil
+        }
+        defer { sqlite3_finalize(stmt) }
+
+        sqlite3_bind_int(stmt, 1, id)
+        guard sqlite3_step(stmt) == SQLITE_ROW else {
+            return nil
+        }
+
+        let parentId: Int32? = sqlite3_column_type(stmt, 1) != SQLITE_NULL
+            ? sqlite3_column_int(stmt, 1)
+            : nil
+        let title       = String(cString: sqlite3_column_text(stmt, 2))
+        let description = String(cString: sqlite3_column_text(stmt, 3))
+        let dateString  = String(cString: sqlite3_column_text(stmt, 4))
+        let isCompleted = sqlite3_column_int(stmt, 5) == 1
+        let date        = ISO8601DateFormatter().date(from: dateString) ?? Date()
+
+        return Note(
+          id: id,
+          parentId: parentId,
+          title: title,
+          description: description,
+          date: date,
+          isCompleted: isCompleted
+        )
     }
 
 

@@ -12,6 +12,7 @@ struct MainView: View {
     @State private var showingGenerate = false
     @State private var currentParentId: Int32? = nil
     @State private var expandedParents = Set<Int32>()
+    @State private var showHelpOverlay = false
 
     private static let dateFormatter = DateFormatter().configured {
         $0.dateStyle = .medium
@@ -21,35 +22,36 @@ struct MainView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(viewModel.notes.filter { $0.parentId == nil }) { note in
+                let rootNotes = viewModel.notes.filter { $0.parentId == nil }
+                ForEach(rootNotes) { note in
                     let children = viewModel.notes.filter { $0.parentId == note.id }
-
                     HStack {
-                        if note.description.isEmpty {
-                            VStack(alignment: .leading, spacing: Theme.vPadding) {
-                                Text(note.title)
-                                    .font(.title2.weight(.semibold))
-                                    .foregroundColor(.primary)
-                                Text(Self.dateFormatter.string(from: note.date))
-                                    .font(Theme.subheadlineFont)
-                                    .foregroundColor(.secondary)
+                        Group {
+                            if note.description.isEmpty {
+                                VStack(alignment: .leading, spacing: Theme.vPadding) {
+                                    Text(note.title)
+                                        .font(.title2.weight(.semibold))
+                                        .foregroundColor(.primary)
+                                    Text(Self.dateFormatter.string(from: note.date))
+                                        .font(Theme.subheadlineFont)
+                                        .foregroundColor(.secondary)
+                                }
+                                .frame(maxWidth: .infinity, minHeight: 80, alignment: .leading)
+                            } else {
+                                VStack(alignment: .leading, spacing: Theme.vPadding) {
+                                    Text(note.title)
+                                        .font(Theme.headlineFont)
+                                        .foregroundColor(.primary)
+                                    Text(note.description)
+                                        .font(Theme.subheadlineFont)
+                                        .foregroundColor(.secondary)
+                                    Text(Self.dateFormatter.string(from: note.date))
+                                        .font(Theme.subheadlineFont)
+                                        .foregroundColor(.secondary)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             }
-                            .frame(maxWidth: .infinity, minHeight: 80, alignment: .leading)
-                        } else {
-                            VStack(alignment: .leading, spacing: Theme.vPadding) {
-                                Text(note.title)
-                                    .font(Theme.headlineFont)
-                                    .foregroundColor(.primary)
-                                Text(note.description)
-                                    .font(Theme.subheadlineFont)
-                                    .foregroundColor(.secondary)
-                                Text(Self.dateFormatter.string(from: note.date))
-                                    .font(Theme.subheadlineFont)
-                                    .foregroundColor(.secondary)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
-
                         if !children.isEmpty {
                             Button {
                                 withAnimation {
@@ -60,25 +62,26 @@ struct MainView: View {
                                     }
                                 }
                             } label: {
-                                Image(systemName:
-                                    expandedParents.contains(note.id)
-                                        ? "chevron.down"
-                                        : "chevron.right"
-                                )
+                                Image(systemName: expandedParents.contains(note.id) ? "chevron.down" : "chevron.right")
                             }
                             .buttonStyle(.plain)
                         } else {
                             Spacer().frame(width: 20)
                         }
-
                         Button {
                             viewModel.toggleComplete(note: note)
                         } label: {
-                            Image(systemName:
-                                note.isCompleted
-                                    ? "checkmark.circle.fill"
-                                    : "circle"
-                            )
+                            Image(systemName: note.isCompleted ? "checkmark.circle.fill" : "circle")
+                        }
+                        .buttonStyle(.plain)
+                        Button {
+                            if UserDefaults.standard.bool(forKey: "isAlarmShortcutConfigured") {
+                                sendToShortcuts(note)
+                            } else {
+                                showHelpOverlay = true
+                            }
+                        } label: {
+                            Image(systemName: "bell")
                         }
                         .buttonStyle(.plain)
                     }
@@ -112,11 +115,7 @@ struct MainView: View {
                                 Button {
                                     viewModel.toggleComplete(note: child)
                                 } label: {
-                                    Image(systemName:
-                                        child.isCompleted
-                                            ? "checkmark.circle.fill"
-                                            : "circle"
-                                    )
+                                    Image(systemName: child.isCompleted ? "checkmark.circle.fill" : "circle")
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -133,7 +132,6 @@ struct MainView: View {
                                 }
                             }
                         }
-
                         HStack {
                             Spacer()
                             Button {
@@ -181,19 +179,52 @@ struct MainView: View {
                     .presentationDetents([.medium])
                     .presentationDragIndicator(.hidden)
             }
-            .sheet(item: $currentParentId) { parentId in
-                AddNoteView(viewModel: viewModel, parentId: parentId)
+            .sheet(item: $currentParentId) { parent in
+                AddNoteView(viewModel: viewModel, parentId: parent)
                     .popupStyle()
                     .presentationDetents([.medium])
                     .presentationDragIndicator(.hidden)
+            }
+            .sheet(isPresented: $showHelpOverlay) {
+                HelpOverlayView()
             }
         }
         .onAppear {
             viewModel.fetchNotes()
         }
-        .onReceive(
-            NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
-        ) { _ in viewModel.fetchNotes() }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+            viewModel.fetchNotes()
+        }
+    }
+
+    private func sendToShortcuts(_ note: Note) {
+        let isoDate = ISO8601DateFormatter().string(from: note.date)
+        let raw = isoDate + "|" + note.title
+        guard let input = raw.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string:
+                "shortcuts://x-callback-url/run-shortcut?name=ScheduleNoteAlarm&input=\(input)"
+              )
+        else {
+            return
+        }
+        UIApplication.shared.open(url)
+    }
+}
+
+private struct HelpOverlayView: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Setup Your Alarm Shortcut")
+                .font(.headline)
+            Text("1 Open Shortcuts and create a new shortcut named ScheduleNoteAlarm\n2 Add Todoo action to fetch title and date\n3 Add Set Alarm action and link inputs\n4 At end add Open URL todoo://setupComplete")
+                .multilineTextAlignment(.leading)
+            Button("Open Shortcuts") {
+                UIApplication.shared.open(URL(string: "shortcuts://")!)
+            }
+        }
+        .padding()
+        .background(Theme.background)
+        .cornerRadius(12)
     }
 }
 

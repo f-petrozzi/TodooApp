@@ -6,13 +6,33 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 @main
 struct TodooApp: App {
+    init() {
+        UNUserNotificationCenter
+            .current()
+            .requestAuthorization(options: [.alert, .sound]) { granted, _ in
+                if !granted {
+                    print("Notifications permission denied")
+                }
+            }
+    }
+
     var body: some Scene {
         WindowGroup {
             MainView()
                 .accentColor(Theme.accent)
+                .onOpenURL { url in
+                    guard url.scheme == "todoo",
+                          url.host   == "setupComplete"
+                    else { return }
+                    UserDefaults.standard.set(
+                        true,
+                        forKey: "isAlarmShortcutConfigured"
+                    )
+                }
         }
     }
 }
