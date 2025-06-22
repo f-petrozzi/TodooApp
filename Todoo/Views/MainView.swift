@@ -228,7 +228,7 @@ private struct HelpOverlayView: View {
     }
 }
 
-extension Int32: Identifiable {
+extension Int32: @retroactive Identifiable {
     public var id: Int32 { self }
 }
 
