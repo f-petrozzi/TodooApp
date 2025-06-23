@@ -6,6 +6,7 @@
 //
 import AppIntents
 
+@available(iOS 17.0, *)
 struct TodooShortcutsProvider: AppShortcutsProvider {
     static let appShortcuts: [AppShortcut] = [
         AppShortcut(
@@ -24,7 +25,16 @@ struct TodooShortcutsProvider: AppShortcutsProvider {
                 "Set alarm for note in ${applicationName}"
             ],
             shortTitle: "Note alarm",
-            systemImageName: "alarm"
+            systemImageName: "bell"
+        ),
+        AppShortcut(
+            intent: RemoveNoteAlarmIntent(),
+            phrases: [
+                "Remove note alarm in ${applicationName}",
+                "Cancel alarm for note in ${applicationName}"
+            ],
+            shortTitle: "Remove alarm",
+            systemImageName: "bell.slash"
         )
     ]
 }

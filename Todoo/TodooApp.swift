@@ -4,11 +4,14 @@
 //
 //  Created by Fabrizio Petrozzi on 6/11/25.
 //
+//
 
 import SwiftUI
 import UserNotifications
+import AppIntents
 
 @main
+@available(iOS 17.0, *)
 struct TodooApp: App {
     init() {
         UNUserNotificationCenter

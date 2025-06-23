@@ -1,17 +1,17 @@
 //
-//  ScheduleNoteAlarm.swift
+//  RemoveNoteAlarm.swift
 //  Todoo
 //
-//  Created by Fabrizio Petrozzi on 6/21/25.
+//  Created by Fabrizio Petrozzi on 6/22/25.
 //
 import AppIntents
 import Foundation
 
 @available(iOS 17.0, *)
-struct ScheduleNoteAlarmIntent: AppIntent {
-    static var title: LocalizedStringResource = "Schedule note alarm"
+struct RemoveNoteAlarmIntent: AppIntent {
+    static var title: LocalizedStringResource = "Remove note alarm"
     static var description: IntentDescription = IntentDescription(
-        "Marks a note as having an alarm scheduled"
+        "Clears the scheduled-alarm flag for a note"
     )
     static var openAppWhenRun: Bool = false
 
@@ -23,7 +23,7 @@ struct ScheduleNoteAlarmIntent: AppIntent {
         guard var note = DatabaseManager.shared.getNote(id: Int32(noteId)) else {
             return .result()
         }
-        note.isAlarmScheduled = true
+        note.isAlarmScheduled = false
         DatabaseManager.shared.updateNote(note)
         return .result()
     }
