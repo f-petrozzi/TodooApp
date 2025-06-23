@@ -15,5 +15,11 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>INShortcut</string>
+		<string>RemoveNoteAlarmIntent</string>
+		<string>ScheduleNoteAlarmIntent</string>
+	</array>
 </dict>
 </plist>

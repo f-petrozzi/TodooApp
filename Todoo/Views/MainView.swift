@@ -8,7 +8,12 @@ import SwiftUI
 import AppIntents
 
 struct MainView: View {
-    @StateObject private var viewModel = NoteViewModel()
+    @StateObject var viewModel: NoteViewModel
+
+    init(viewModel: NoteViewModel = NoteViewModel()) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
+
     @State private var showingAddNote = false
     @State private var showingGenerate = false
     @State private var currentParentId: Int32? = nil
@@ -31,7 +36,6 @@ struct MainView: View {
 
                     if expandedParents.contains(note.id) {
                         let children = viewModel.notes.filter { $0.parentId == note.id }
-
                         ForEach(children) { child in
                             HStack {
                                 Color.clear.frame(width: 0)
@@ -42,11 +46,7 @@ struct MainView: View {
                                 Button {
                                     viewModel.toggleComplete(note: child)
                                 } label: {
-                                    Image(systemName:
-                                        child.isCompleted
-                                            ? "checkmark.circle.fill"
-                                            : "circle"
-                                    )
+                                    Image(systemName: child.isCompleted ? "checkmark.circle.fill" : "circle")
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -102,7 +102,6 @@ struct MainView: View {
                 }
             }
             .accentColor(Theme.accent)
-
             .sheet(isPresented: $showingAddNote) {
                 AddNoteView(viewModel: viewModel, parentId: nil)
                     .popupStyle()

@@ -26,7 +26,6 @@ struct NoteRow: View {
 
     var body: some View {
         HStack {
-            // Title, description, and date
             Group {
                 if note.description.isEmpty {
                     VStack(alignment: .leading, spacing: Theme.vPadding) {
@@ -54,7 +53,6 @@ struct NoteRow: View {
                 }
             }
 
-            // Expand/collapse indicator
             if !children.isEmpty {
                 Button {
                     withAnimation {
@@ -72,7 +70,6 @@ struct NoteRow: View {
                 Spacer().frame(width: 20)
             }
 
-            // Completion toggle
             Button {
                 viewModel.toggleComplete(note: note)
             } label: {
@@ -80,39 +77,45 @@ struct NoteRow: View {
             }
             .buttonStyle(.plain)
 
-            // Alarm toggle button
             Button {
                 let configured = UserDefaults.standard.bool(forKey: "isAlarmShortcutConfigured")
-                print("Bell tapped; isAlarmShortcutConfigured = \(configured)")
-                guard configured else {
-                    showHelp()
-                    return
-                }
+                guard configured else { showHelp(); return }
 
+                let calendar = Calendar.current
+                let isToday = calendar.isDate(note.date, inSameDayAs: Date())
                 let iso = ISO8601DateFormatter().string(from: note.date)
-                let raw = iso + "|" + note.title
-                guard let input = raw.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-                    return
-                }
+                let raw = "\(iso)|\(note.title)|\(note.id)"
+                guard let input = raw.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
+
                 let name = note.isAlarmScheduled ? "RemoveNoteAlarm" : "ScheduleNoteAlarm"
+                let params = "noteId=\(note.id)"
+                let success = "todoo://alarmRemoved?\(params)&deleted=true".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                let cancel  = "todoo://alarmRemoved?\(params)&deleted=false".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
                 let urlString =
                     "shortcuts://x-callback-url/run-shortcut?" +
-                    "name=\(name)&input=\(input)&x-success=todoo://setupComplete"
-                print("Will open \(name) URL →", urlString)
+                    "name=\(name)&input=\(input)" +
+                    "&x-success=\(success)&x-cancel=\(cancel)"
 
                 Task {
-                    if let url = URL(string: urlString) {
-                        await UIApplication.shared.open(url)
-                    }
-                    // Update local flag via AppIntent
                     if note.isAlarmScheduled {
-                        let intent = RemoveNoteAlarmIntent()
-                        intent.noteId = Int(note.id)
-                        _ = try? await intent.perform()
+                        if isToday, let url = URL(string: urlString) {
+                            await UIApplication.shared.open(url)
+                        } else {
+                            let intent = RemoveNoteAlarmIntent()
+                            intent.noteId = Int(note.id)
+                            _ = try? await intent.perform()
+                        }
                     } else {
-                        let intent = ScheduleNoteAlarmIntent()
-                        intent.noteId = Int(note.id)
-                        _ = try? await intent.perform()
+                        if isToday, let url = URL(string: urlString) {
+                            await UIApplication.shared.open(url)
+                            let intent = ScheduleNoteAlarmIntent()
+                            intent.noteId = Int(note.id)
+                            _ = try? await intent.perform()
+                        } else {
+                            let intent = ScheduleNoteAlarmIntent()
+                            intent.noteId = Int(note.id)
+                            _ = try? await intent.perform()
+                        }
                     }
                     viewModel.fetchNotes()
                 }
@@ -124,38 +127,28 @@ struct NoteRow: View {
         .cardStyle()
         .swipeActions(edge: .leading) {
             if isParent {
-                Button {
-                    onAddChild()
-                } label: {
-                    Image(systemName: "plus.circle")
-                        .iconButtonStyle(size: 24)
+                Button { onAddChild() } label: {
+                    Image(systemName: "plus.circle").iconButtonStyle(size: 24)
                 }
                 .tint(Theme.accent)
             }
         }
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
-                // 1) Remove from UI immediately
+                let hadAlarm = note.isAlarmScheduled
                 expandedParents.remove(note.id)
                 viewModel.deleteNote(id: note.id)
-                
-                // 2) Then delete the alarm asynchronously
-                Task {
-                    if note.isAlarmScheduled {
+                if hadAlarm {
+                    Task {
                         let iso = ISO8601DateFormatter().string(from: note.date)
-                        let raw = iso + "|" + note.title
-                        guard let input = raw.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-                            return
-                        }
-                        let urlString =
-                            "shortcuts://x-callback-url/run-shortcut?" +
-                            "name=RemoveNoteAlarm&input=\(input)&x-success=todoo://setupComplete"
-                        if let url = URL(string: urlString) {
+                        let raw = "\(iso)|\(note.title)|\(note.id)"
+                        guard let input = raw.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
+                        let name = "RemoveNoteAlarm"
+                        let success = "todoo://setupComplete".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+                        let urlStr = "shortcuts://x-callback-url/run-shortcut?name=\(name)&input=\(input)&x-success=\(success)"
+                        if let url = URL(string: urlStr) {
                             await UIApplication.shared.open(url)
                         }
-                        let intent = RemoveNoteAlarmIntent()
-                        intent.noteId = Int(note.id)
-                        _ = try? await intent.perform()
                     }
                 }
             } label: {

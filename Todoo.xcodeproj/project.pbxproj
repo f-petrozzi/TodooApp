@@ -3,8 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 90;
 	objects = {
+
+/* Begin PBXBuildFile section */
+		D67F1B832E09C95500C7B85D /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67F1B822E09C95500C7B85D /* Intents.framework */; };
+/* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		D65D9ACC2DFA509B0051945C /* PBXContainerItemProxy */ = {
@@ -23,10 +27,24 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		D6490E722E09B5B4006AB863 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = PlugIns;
+			files = (
+			);
+			name = "Embed Foundation Extensions";
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		D6490E502E09B5B4006AB863 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
+		D6490E5B2E09B5B4006AB863 /* IntentsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IntentsUI.framework; path = System/Library/Frameworks/IntentsUI.framework; sourceTree = SDKROOT; };
 		D67B009A2DFDE93700A7A3C9 /* Todoo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D67B009B2DFDE93700A7A3C9 /* TodooTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TodooTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D67B009C2DFDE93700A7A3C9 /* TodooUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TodooUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D67F1B822E09C95500C7B85D /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk/System/Library/Frameworks/Intents.framework; sourceTree = DEVELOPER_DIR; };
 		D6C0C4B02E089B2200A20A5D /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk/System/Library/Frameworks/AppIntents.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
@@ -54,24 +72,19 @@
 /* Begin PBXFrameworksBuildPhase section */
 		D65D9ABA2DFA50990051945C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
+				D67F1B832E09C95500C7B85D /* Intents.framework in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D65D9AC82DFA509B0051945C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D65D9AD22DFA509B0051945C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -90,7 +103,10 @@
 		D6C0C4AF2E089B2200A20A5D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D67F1B822E09C95500C7B85D /* Intents.framework */,
 				D6C0C4B02E089B2200A20A5D /* AppIntents.framework */,
+				D6490E502E09B5B4006AB863 /* Intents.framework */,
+				D6490E5B2E09B5B4006AB863 /* IntentsUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -105,17 +121,14 @@
 				D65D9AB92DFA50990051945C /* Sources */,
 				D65D9ABA2DFA50990051945C /* Frameworks */,
 				D65D9ABB2DFA50990051945C /* Resources */,
+				D6490E722E09B5B4006AB863 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
-			);
-			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
 				D65D9ABF2DFA50990051945C /* Todoo */,
 			);
 			name = Todoo;
-			packageProductDependencies = (
-			);
 			productName = Todoo;
 			productReference = D67B009A2DFDE93700A7A3C9 /* Todoo.app */;
 			productType = "com.apple.product-type.application";
@@ -134,8 +147,6 @@
 				D65D9ACD2DFA509B0051945C /* PBXTargetDependency */,
 			);
 			name = TodooTests;
-			packageProductDependencies = (
-			);
 			productName = TodooTests;
 			productReference = D67B009B2DFDE93700A7A3C9 /* TodooTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -154,8 +165,6 @@
 				D65D9AD72DFA509B0051945C /* PBXTargetDependency */,
 			);
 			name = TodooUITests;
-			packageProductDependencies = (
-			);
 			productName = TodooUITests;
 			productReference = D67B009C2DFDE93700A7A3C9 /* TodooUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -192,7 +201,7 @@
 			);
 			mainGroup = D65D9AB42DFA50990051945C;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
+			preferredProjectObjectVersion = 90;
 			productRefGroup = D65D9AB42DFA50990051945C;
 			projectDirPath = "";
 			projectRoot = "";
@@ -207,48 +216,36 @@
 /* Begin PBXResourcesBuildPhase section */
 		D65D9ABB2DFA50990051945C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D65D9AC92DFA509B0051945C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D65D9AD32DFA509B0051945C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D65D9AB92DFA50990051945C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D65D9AC72DFA509B0051945C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D65D9AD12DFA509B0051945C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -266,7 +263,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		D65D9ADD2DFA509B0051945C /* Debug */ = {
+		D65D9ADD2DFA509B0051945C /* Debug configuration for PBXProject "Todoo" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -328,7 +325,7 @@
 			};
 			name = Debug;
 		};
-		D65D9ADE2DFA509B0051945C /* Release */ = {
+		D65D9ADE2DFA509B0051945C /* Release configuration for PBXProject "Todoo" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -382,7 +379,7 @@
 			};
 			name = Release;
 		};
-		D65D9AE02DFA509B0051945C /* Debug */ = {
+		D65D9AE02DFA509B0051945C /* Debug configuration for PBXNativeTarget "Todoo" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -395,18 +392,21 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Todoo/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
-				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
@@ -424,7 +424,7 @@
 			};
 			name = Debug;
 		};
-		D65D9AE12DFA509B0051945C /* Release */ = {
+		D65D9AE12DFA509B0051945C /* Release configuration for PBXNativeTarget "Todoo" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -437,18 +437,21 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Todoo/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
-				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
@@ -466,7 +469,7 @@
 			};
 			name = Release;
 		};
-		D65D9AE32DFA509B0051945C /* Debug */ = {
+		D65D9AE32DFA509B0051945C /* Debug configuration for PBXNativeTarget "TodooTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -489,7 +492,7 @@
 			};
 			name = Debug;
 		};
-		D65D9AE42DFA509B0051945C /* Release */ = {
+		D65D9AE42DFA509B0051945C /* Release configuration for PBXNativeTarget "TodooTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -512,7 +515,7 @@
 			};
 			name = Release;
 		};
-		D65D9AE62DFA509B0051945C /* Debug */ = {
+		D65D9AE62DFA509B0051945C /* Debug configuration for PBXNativeTarget "TodooUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -534,7 +537,7 @@
 			};
 			name = Debug;
 		};
-		D65D9AE72DFA509B0051945C /* Release */ = {
+		D65D9AE72DFA509B0051945C /* Release configuration for PBXNativeTarget "TodooUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -562,37 +565,33 @@
 		D65D9AB82DFA50990051945C /* Build configuration list for PBXProject "Todoo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D65D9ADD2DFA509B0051945C /* Debug */,
-				D65D9ADE2DFA509B0051945C /* Release */,
+				D65D9ADD2DFA509B0051945C /* Debug configuration for PBXProject "Todoo" */,
+				D65D9ADE2DFA509B0051945C /* Release configuration for PBXProject "Todoo" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		D65D9ADF2DFA509B0051945C /* Build configuration list for PBXNativeTarget "Todoo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D65D9AE02DFA509B0051945C /* Debug */,
-				D65D9AE12DFA509B0051945C /* Release */,
+				D65D9AE02DFA509B0051945C /* Debug configuration for PBXNativeTarget "Todoo" */,
+				D65D9AE12DFA509B0051945C /* Release configuration for PBXNativeTarget "Todoo" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		D65D9AE22DFA509B0051945C /* Build configuration list for PBXNativeTarget "TodooTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D65D9AE32DFA509B0051945C /* Debug */,
-				D65D9AE42DFA509B0051945C /* Release */,
+				D65D9AE32DFA509B0051945C /* Debug configuration for PBXNativeTarget "TodooTests" */,
+				D65D9AE42DFA509B0051945C /* Release configuration for PBXNativeTarget "TodooTests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		D65D9AE52DFA509B0051945C /* Build configuration list for PBXNativeTarget "TodooUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D65D9AE62DFA509B0051945C /* Debug */,
-				D65D9AE72DFA509B0051945C /* Release */,
+				D65D9AE62DFA509B0051945C /* Debug configuration for PBXNativeTarget "TodooUITests" */,
+				D65D9AE72DFA509B0051945C /* Release configuration for PBXNativeTarget "TodooUITests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
