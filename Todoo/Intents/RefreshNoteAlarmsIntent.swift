@@ -41,7 +41,10 @@ struct RefreshNoteAlarmsIntent: AppIntent {
 
     private func runShortcut(_ name: String, date: Date, title: String, noteId: Int32) {
         let iso = ISO8601DateFormatter().string(from: date)
-        let raw = "\(iso)|\(title)|\(noteId)"
+        let components = Calendar.current.dateComponents([.hour, .minute], from: date)
+        let hour = components.hour ?? 0
+        let minute = components.minute ?? 0
+        let raw = "\(iso)|\(title)|\(noteId)|\(hour)|\(minute)"
         guard let input = raw.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let url = URL(string:
                     "shortcuts://x-callback-url/run-shortcut?name=\(name)&input=\(input)&x-success=todoo://setupComplete")

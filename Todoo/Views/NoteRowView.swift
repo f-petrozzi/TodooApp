@@ -4,6 +4,7 @@
 //
 //  Created by Fabrizio Petrozzi on 6/22/25.
 //
+
 import SwiftUI
 import AppIntents
 
@@ -84,13 +85,18 @@ struct NoteRow: View {
                 let calendar = Calendar.current
                 let isToday = calendar.isDate(note.date, inSameDayAs: Date())
                 let iso = ISO8601DateFormatter().string(from: note.date)
-                let raw = "\(iso)|\(note.title)|\(note.id)"
+                let components = calendar.dateComponents([.hour, .minute], from: note.date)
+                let hour = components.hour ?? 0
+                let minute = components.minute ?? 0
+                let raw = "\(iso)|\(note.title)|\(note.id)|\(hour)|\(minute)"
                 guard let input = raw.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
 
                 let name = note.isAlarmScheduled ? "RemoveNoteAlarm" : "ScheduleNoteAlarm"
                 let params = "noteId=\(note.id)"
-                let success = "todoo://alarmRemoved?\(params)&deleted=true".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-                let cancel  = "todoo://alarmRemoved?\(params)&deleted=false".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                let success = "todoo://alarmRemoved?\(params)&deleted=true"
+                    .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                let cancel = "todoo://alarmRemoved?\(params)&deleted=false"
+                    .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
                 let urlString =
                     "shortcuts://x-callback-url/run-shortcut?" +
                     "name=\(name)&input=\(input)" +
@@ -143,11 +149,17 @@ struct NoteRow: View {
                 if hadAlarm {
                     Task {
                         let iso = ISO8601DateFormatter().string(from: note.date)
-                        let raw = "\(iso)|\(note.title)|\(note.id)"
+                        let comps = Calendar.current.dateComponents([.hour, .minute], from: note.date)
+                        let hour = comps.hour ?? 0
+                        let minute = comps.minute ?? 0
+                        let raw = "\(iso)|\(note.title)|\(note.id)|\(hour)|\(minute)"
                         guard let input = raw.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
                         let name = "RemoveNoteAlarm"
-                        let success = "todoo://setupComplete".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-                        let urlStr = "shortcuts://x-callback-url/run-shortcut?name=\(name)&input=\(input)&x-success=\(success)"
+                        let success = "todoo://setupComplete"
+                            .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+                        let urlStr =
+                            "shortcuts://x-callback-url/run-shortcut?" +
+                            "name=\(name)&input=\(input)&x-success=\(success)"
                         if let url = URL(string: urlStr) {
                             await UIApplication.shared.open(url)
                         }
@@ -159,3 +171,4 @@ struct NoteRow: View {
         }
     }
 }
+
