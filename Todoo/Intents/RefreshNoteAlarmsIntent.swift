@@ -19,17 +19,17 @@ struct RefreshNoteAlarmsIntent: AppIntent {
         let db = DatabaseManager.shared
         let notes = db.getAllNotes()
         let cal = Calendar.current
-        let today = cal.startOfDay(for: Date())
+        let now = Date()
+        let today = cal.startOfDay(for: now)
 
         for note in notes where note.isAlarmScheduled {
-            let noteDay = cal.startOfDay(for: note.date)
-            if noteDay < today {
-                runShortcut("RemoveNoteAlarm", date: note.date, label: note.title)
+            if note.date < now {
+                runShortcut("RemoveNoteAlarm", date: note.date, title: note.title, noteId: note.id)
                 var cleared = note
                 cleared.isAlarmScheduled = false
                 db.updateNote(cleared)
-            } else if cal.isDate(note.date, inSameDayAs: today) {
-                runShortcut("ScheduleNoteAlarm", date: note.date, label: note.title)
+            } else if cal.isDate(note.date, inSameDayAs: today) && note.date >= now {
+                runShortcut("ScheduleNoteAlarm", date: note.date, title: note.title, noteId: note.id)
                 var marked = note
                 marked.isAlarmScheduled = true
                 db.updateNote(marked)
@@ -39,11 +39,12 @@ struct RefreshNoteAlarmsIntent: AppIntent {
         return .result()
     }
 
-    private func runShortcut(_ name: String, date: Date, label: String) {
+    private func runShortcut(_ name: String, date: Date, title: String, noteId: Int32) {
         let iso = ISO8601DateFormatter().string(from: date)
-        let raw = "\(iso)|\(label)"
+        let raw = "\(iso)|\(title)|\(noteId)"
         guard let input = raw.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let url = URL(string: "shortcuts://x-callback-url/run-shortcut?name=\(name)&input=\(input)&x-success=todoo://setupComplete")
+              let url = URL(string:
+                    "shortcuts://x-callback-url/run-shortcut?name=\(name)&input=\(input)&x-success=todoo://setupComplete")
         else {
             return
         }

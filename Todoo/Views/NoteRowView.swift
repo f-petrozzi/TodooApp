@@ -123,6 +123,8 @@ struct NoteRow: View {
                 Image(systemName: note.isAlarmScheduled ? "bell.fill" : "bell")
             }
             .buttonStyle(.plain)
+            .disabled(note.date < Date())
+
         }
         .cardStyle()
         .swipeActions(edge: .leading) {

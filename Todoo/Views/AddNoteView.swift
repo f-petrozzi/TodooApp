@@ -30,7 +30,6 @@ struct AddNoteView: View {
                     ZStack(alignment: .topLeading) {
                         TextEditor(text: $description)
                             .padding(12)
-
                         if description.isEmpty {
                             Text("Description")
                                 .foregroundColor(.secondary)
@@ -69,6 +68,7 @@ struct AddNoteView: View {
                         .cornerRadius(8)
                 }
                 .padding(.horizontal, 16)
+                .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
                 Spacer()
             }
