@@ -6,4 +6,7 @@
 //
 import AlarmKit
 
-struct NoMetadata: AlarmMetadata {}
+public struct NoteAlarmMetadata: AlarmMetadata {
+    public let noteId: Int32
+    public let title: String
+}

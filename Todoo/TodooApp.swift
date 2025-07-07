@@ -5,49 +5,25 @@
 //  Created by Fabrizio Petrozzi on 6/11/25.
 //
 import SwiftUI
-import UserNotifications
 
 @main
 struct TodooApp: App {
-  @StateObject private var viewModel = NoteViewModel()
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
-  init() {
-    Task {
-      let center = UNUserNotificationCenter.current()
-
-      // register Snooze & Done actions
-      let snooze = UNNotificationAction(
-        identifier: "SNOOZE_ACTION",
-        title: "Snooze",
-        options: []
-      )
-      let done = UNNotificationAction(
-        identifier: "DONE_ACTION",
-        title: "Done",
-        options: [.destructive]
-      )
-      let category = UNNotificationCategory(
-        identifier: "NOTE_ALARM",
-        actions: [snooze, done],
-        intentIdentifiers: [],
-        options: []
-      )
-      center.setNotificationCategories([category])
-      center.delegate = NotificationDelegate.shared
-
-      do {
-        try await NotificationService.shared.requestAuthorization()
-      } catch {
-        print("⚠️ Notification permission error:", error)
-      }
+    var body: some Scene {
+        WindowGroup {
+            MainView(viewModel: NoteViewModel())
+        }
     }
-  }
+}
 
-  var body: some Scene {
-    WindowGroup {
-      ContentView()
-        .environmentObject(viewModel)
-        .accentColor(Theme.accent)
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions:
+        [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
+        return true
     }
-  }
 }

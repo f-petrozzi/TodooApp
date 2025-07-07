@@ -7,10 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D63D02AD2E1C7C09004FFCBF /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63D02AC2E1C7C09004FFCBF /* WidgetKit.framework */; };
+		D63D02AF2E1C7C09004FFCBF /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63D02AE2E1C7C09004FFCBF /* SwiftUI.framework */; };
+		D63D02BC2E1C7C0A004FFCBF /* TodooLiveActivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D63D02AB2E1C7C09004FFCBF /* TodooLiveActivityExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D67F1B832E09C95500C7B85D /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67F1B822E09C95500C7B85D /* Intents.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		D63D02BA2E1C7C0A004FFCBF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D65D9AB52DFA50990051945C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D63D02AA2E1C7C09004FFCBF;
+			remoteInfo = TodooLiveActivityExtension;
+		};
 		D65D9ACC2DFA509B0051945C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D65D9AB52DFA50990051945C /* Project object */;
@@ -33,12 +43,16 @@
 			dstPath = "";
 			dstSubfolder = PlugIns;
 			files = (
+				D63D02BC2E1C7C0A004FFCBF /* TodooLiveActivityExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D63D02AB2E1C7C09004FFCBF /* TodooLiveActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TodooLiveActivityExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D63D02AC2E1C7C09004FFCBF /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		D63D02AE2E1C7C09004FFCBF /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		D6490E502E09B5B4006AB863 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		D6490E5B2E09B5B4006AB863 /* IntentsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IntentsUI.framework; path = System/Library/Frameworks/IntentsUI.framework; sourceTree = SDKROOT; };
 		D67B009A2DFDE93700A7A3C9 /* Todoo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -49,6 +63,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D63D02C02E1C7C0A004FFCBF /* Exceptions for "TodooLiveActivity" folder in "TodooLiveActivityExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D63D02AA2E1C7C09004FFCBF /* TodooLiveActivityExtension */;
+		};
 		D6C0C4AA2E0787D900A20A5D /* Exceptions for "Todoo" folder in "Todoo" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -59,6 +80,14 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		D63D02B02E1C7C09004FFCBF /* TodooLiveActivity */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D63D02C02E1C7C0A004FFCBF /* Exceptions for "TodooLiveActivity" folder in "TodooLiveActivityExtension" target */,
+			);
+			path = TodooLiveActivity;
+			sourceTree = "<group>";
+		};
 		D65D9ABF2DFA50990051945C /* Todoo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -70,6 +99,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		D63D02A82E1C7C09004FFCBF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				D63D02AF2E1C7C09004FFCBF /* SwiftUI.framework in Frameworks */,
+				D63D02AD2E1C7C09004FFCBF /* WidgetKit.framework in Frameworks */,
+			);
+		};
 		D65D9ABA2DFA50990051945C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
@@ -96,7 +132,9 @@
 				D67B009A2DFDE93700A7A3C9 /* Todoo.app */,
 				D67B009B2DFDE93700A7A3C9 /* TodooTests.xctest */,
 				D67B009C2DFDE93700A7A3C9 /* TodooUITests.xctest */,
+				D63D02B02E1C7C09004FFCBF /* TodooLiveActivity */,
 				D6C0C4AF2E089B2200A20A5D /* Frameworks */,
+				D63D02AB2E1C7C09004FFCBF /* TodooLiveActivityExtension.appex */,
 			);
 			sourceTree = "<group>";
 		};
@@ -107,6 +145,8 @@
 				D6C0C4B02E089B2200A20A5D /* AppIntents.framework */,
 				D6490E502E09B5B4006AB863 /* Intents.framework */,
 				D6490E5B2E09B5B4006AB863 /* IntentsUI.framework */,
+				D63D02AC2E1C7C09004FFCBF /* WidgetKit.framework */,
+				D63D02AE2E1C7C09004FFCBF /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -114,6 +154,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		D63D02AA2E1C7C09004FFCBF /* TodooLiveActivityExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D63D02BD2E1C7C0A004FFCBF /* Build configuration list for PBXNativeTarget "TodooLiveActivityExtension" */;
+			buildPhases = (
+				D63D02A72E1C7C09004FFCBF /* Sources */,
+				D63D02A82E1C7C09004FFCBF /* Frameworks */,
+				D63D02A92E1C7C09004FFCBF /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				D63D02B02E1C7C09004FFCBF /* TodooLiveActivity */,
+			);
+			name = TodooLiveActivityExtension;
+			productName = TodooLiveActivityExtension;
+			productReference = D63D02AB2E1C7C09004FFCBF /* TodooLiveActivityExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		D65D9ABC2DFA50990051945C /* Todoo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D65D9ADF2DFA509B0051945C /* Build configuration list for PBXNativeTarget "Todoo" */;
@@ -124,6 +182,9 @@
 				D6490E722E09B5B4006AB863 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
+			);
+			dependencies = (
+				D63D02BB2E1C7C0A004FFCBF /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				D65D9ABF2DFA50990051945C /* Todoo */,
@@ -176,9 +237,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1640;
+				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
+					D63D02AA2E1C7C09004FFCBF = {
+						CreatedOnToolsVersion = 26.0;
+					};
 					D65D9ABC2DFA50990051945C = {
 						CreatedOnToolsVersion = 16.4;
 					};
@@ -209,11 +273,17 @@
 				D65D9ABC2DFA50990051945C /* Todoo */,
 				D65D9ACA2DFA509B0051945C /* TodooTests */,
 				D65D9AD42DFA509B0051945C /* TodooUITests */,
+				D63D02AA2E1C7C09004FFCBF /* TodooLiveActivityExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		D63D02A92E1C7C09004FFCBF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
 		D65D9ABB2DFA50990051945C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
@@ -232,6 +302,11 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		D63D02A72E1C7C09004FFCBF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 		D65D9AB92DFA50990051945C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
@@ -250,6 +325,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		D63D02BB2E1C7C0A004FFCBF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D63D02AA2E1C7C09004FFCBF /* TodooLiveActivityExtension */;
+			targetProxy = D63D02BA2E1C7C0A004FFCBF /* PBXContainerItemProxy */;
+		};
 		D65D9ACD2DFA509B0051945C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D65D9ABC2DFA50990051945C /* Todoo */;
@@ -263,6 +343,69 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		D63D02BE2E1C7C0A004FFCBF /* Debug configuration for PBXNativeTarget "TodooLiveActivityExtension" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4GXVT3G2C4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TodooLiveActivity/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TodooLiveActivity;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Fabrizio.Todoo.TodooLiveActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D63D02BF2E1C7C0A004FFCBF /* Release configuration for PBXNativeTarget "TodooLiveActivityExtension" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4GXVT3G2C4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TodooLiveActivity/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TodooLiveActivity;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Fabrizio.Todoo.TodooLiveActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		D65D9ADD2DFA509B0051945C /* Debug configuration for PBXProject "Todoo" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -576,6 +719,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		D63D02BD2E1C7C0A004FFCBF /* Build configuration list for PBXNativeTarget "TodooLiveActivityExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D63D02BE2E1C7C0A004FFCBF /* Debug configuration for PBXNativeTarget "TodooLiveActivityExtension" */,
+				D63D02BF2E1C7C0A004FFCBF /* Release configuration for PBXNativeTarget "TodooLiveActivityExtension" */,
+			);
+			defaultConfigurationName = Release;
+		};
 		D65D9AB82DFA50990051945C /* Build configuration list for PBXProject "Todoo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

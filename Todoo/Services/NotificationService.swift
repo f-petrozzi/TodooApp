@@ -4,7 +4,6 @@
 //
 //  Created by Fabrizio Petrozzi on 7/7/25.
 //
-// Services/NotificationService.swift
 import UserNotifications
 import Foundation
 
@@ -17,17 +16,31 @@ actor NotificationService {
   static let shared = NotificationService()
   private let center = UNUserNotificationCenter.current()
 
+  private let snoozeAction = UNNotificationAction(
+    identifier: "SNOOZE_ACTION",
+    title: "Snooze",
+    options: []
+  )
+  private let doneAction = UNNotificationAction(
+    identifier: "DONE_ACTION",
+    title: "Done",
+    options: [.authenticationRequired]
+  )
+  private lazy var category = UNNotificationCategory(
+    identifier: "NOTE_ALARM",
+    actions: [snoozeAction, doneAction],
+    intentIdentifiers: [],
+    options: [.customDismissAction]
+  )
+
   func requestAuthorization() async throws {
     let granted = try await center.requestAuthorization(options: [.alert, .sound])
-    print("🔔 requestAuthorization granted? \(granted)")
     if !granted { throw NotificationError.noPermission }
+    center.setNotificationCategories([category])
   }
 
   func schedule(note: Note) async throws {
-    guard note.date > Date() else {
-      print("⚠️ schedule: date in past:", note.date)
-      throw NotificationError.invalidDate
-    }
+    guard note.date > Date() else { throw NotificationError.invalidDate }
 
     let content = UNMutableNotificationContent()
     content.title = note.title
@@ -37,25 +50,17 @@ actor NotificationService {
 
     let interval = note.date.timeIntervalSinceNow
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
-    let id = String(note.id)
-    let req = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+    let request = UNNotificationRequest(
+      identifier: String(note.id),
+      content: content,
+      trigger: trigger
+    )
 
-    do {
-      try await center.add(req)
-      print("✅ Fallback notification scheduled id=\(id) in \(interval)s")
-    } catch {
-      print("❌ Fallback schedule failed:", error)
-    }
-
-    center.getPendingNotificationRequests { requests in
-      print("📋 Pending notifications:", requests.map(\.identifier))
-    }
+    try await center.add(request)
   }
 
   @MainActor
   func cancel(noteId: Int32) {
-    let id = String(noteId)
-    center.removePendingNotificationRequests(withIdentifiers: [id])
-    print("🗑 Removed fallback notification id=\(id)")
+    center.removePendingNotificationRequests(withIdentifiers: [String(noteId)])
   }
 }
