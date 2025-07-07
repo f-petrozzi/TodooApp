@@ -7,24 +7,20 @@
 import AppIntents
 import Foundation
 
-@available(iOS 17.0, *)
 struct ScheduleNoteAlarmIntent: AppIntent {
-    static var title: LocalizedStringResource = "Schedule note alarm"
-    static var description: IntentDescription = IntentDescription(
-        "Marks a note as having an alarm scheduled"
-    )
-    static var openAppWhenRun: Bool = false
+  static var title: LocalizedStringResource { "Schedule Note Alarm" }
+  static var description = IntentDescription("Schedules an alarm for a note")
 
-    @Parameter(title: "Note ID")
-    var noteId: Int
+  @Parameter(title: "Note ID") var noteId: Int
 
-    @MainActor
-    func perform() async throws -> some IntentResult {
-        guard var note = DatabaseManager.shared.getNote(id: Int32(noteId)) else {
-            return .result()
-        }
-        note.isAlarmScheduled = true
-        DatabaseManager.shared.updateNote(note)
-        return .result()
+  @MainActor
+  func perform() async throws -> some IntentResult {
+    guard let note = DatabaseManager.shared.getNote(id: Int32(noteId)) else {
+      return .result()
     }
+    try await AlarmService.shared.schedule(note: note)
+    var updated = note; updated.isAlarmScheduled = true
+    DatabaseManager.shared.updateNote(updated)
+    return .result()
+  }
 }

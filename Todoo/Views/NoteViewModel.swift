@@ -9,58 +9,66 @@ import Foundation
 class NoteViewModel: ObservableObject {
   @Published var notes: [Note] = []
 
-  private let dbQueue = DispatchQueue(label: "com.yourapp.sqliteQueue",
-                                      qos: .userInitiated)
-
   init() {
     fetchNotes()
   }
 
   func fetchNotes() {
-    dbQueue.async {
-      let all = DatabaseManager.shared.getAllNotes()
-      DispatchQueue.main.async {
-        self.notes = all
-      }
-    }
+    notes = DatabaseManager.shared.getAllNotes()
   }
 
   func addNote(title: String, description: String, date: Date, parentId: Int32?) {
-    let newNote = Note(id: 0,
-                       parentId: parentId,
-                       title: title,
-                       description: description,
-                       date: date,
-                       isCompleted: false)
-                       
-    dbQueue.async {
-      DatabaseManager.shared.insertNote(newNote)
-      let all = DatabaseManager.shared.getAllNotes()
-      DispatchQueue.main.async {
-        self.notes = all
-      }
-    }
+    let newNote = Note(
+      id: 0,
+      parentId: parentId,
+      title: title,
+      description: description,
+      date: date,
+      isCompleted: false
+    )
+    DatabaseManager.shared.insertNote(newNote)
+    fetchNotes()
   }
 
   func deleteNote(id: Int32) {
-    dbQueue.async {
-      DatabaseManager.shared.deleteNote(id: id)
-      let all = DatabaseManager.shared.getAllNotes()
-      DispatchQueue.main.async {
-        self.notes = all
-      }
-    }
+    DatabaseManager.shared.deleteNote(id: id)
+    fetchNotes()
   }
 
   func toggleComplete(note: Note) {
     var updated = note
     updated.isCompleted.toggle()
-    dbQueue.async {
-      DatabaseManager.shared.updateNote(updated)
-      let all = DatabaseManager.shared.getAllNotes()
-      DispatchQueue.main.async {
-        self.notes = all
+    DatabaseManager.shared.updateNote(updated)
+    fetchNotes()
+  }
+
+  func toggleAlarm(for note: Note) {
+    Task { @MainActor in
+      var updated = note
+      if updated.isAlarmScheduled {
+        try? await AlarmService.shared.cancel(noteId: updated.id)
+        updated.isAlarmScheduled = false
+      } else if updated.date > Date() {
+        try? await AlarmService.shared.schedule(note: updated)
+        updated.isAlarmScheduled = true
       }
+      if updated.isAlarmScheduled {
+        try? await NotificationService.shared.schedule(note: updated)
+      } else {
+        await NotificationService.shared.cancel(noteId: updated.id)
+      }
+      DatabaseManager.shared.updateNote(updated)
+      notes = DatabaseManager.shared.getAllNotes()
+    }
+  }
+
+  func delete(note: Note) {
+    Task { @MainActor in
+      if note.isAlarmScheduled {
+        await NotificationService.shared.cancel(noteId: note.id)
+      }
+      DatabaseManager.shared.deleteNote(id: note.id)
+      notes = DatabaseManager.shared.getAllNotes()
     }
   }
 }

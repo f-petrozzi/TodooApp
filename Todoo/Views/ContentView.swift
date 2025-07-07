@@ -4,17 +4,17 @@
 //
 //  Created by Fabrizio Petrozzi on 6/11/25.
 //
-
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            // UI will go here
-        }
-    }
+  @EnvironmentObject var viewModel: NoteViewModel
+
+  var body: some View {
+    MainView(viewModel: viewModel)
+  }
 }
 
 #Preview {
-    MainView()
+  ContentView()
+    .environmentObject(NoteViewModel())
 }
