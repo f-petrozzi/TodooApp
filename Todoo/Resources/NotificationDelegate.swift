@@ -9,7 +9,7 @@ import Foundation
 import ActivityKit
 
 @MainActor
-class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
+class NotificationDelegate: NSObject, @preconcurrency UNUserNotificationCenterDelegate {
     static let shared = NotificationDelegate()
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completion: @escaping (UNNotificationPresentationOptions) -> Void) {
@@ -39,7 +39,7 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
             }
             let activities = Activity<AlarmAttributes>.activities.filter { $0.attributes.metadata.noteId == noteId }
             for activity in activities {
-                await activity.end(dismissalPolicy: .immediate)
+                await activity.end(nil, dismissalPolicy: .immediate)
             }
         default:
             break

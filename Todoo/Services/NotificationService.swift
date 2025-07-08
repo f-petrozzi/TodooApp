@@ -61,6 +61,6 @@ actor NotificationService {
 
   @MainActor
   func cancel(noteId: Int32) {
-    center.removePendingNotificationRequests(withIdentifiers: [String(noteId)])
+      UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [String(noteId)])
   }
 }

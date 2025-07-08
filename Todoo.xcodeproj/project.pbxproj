@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D6309AFC2E1CDC990063D4AF /* AlarmKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6309AFB2E1CDC990063D4AF /* AlarmKit.framework */; };
 		D63D02AD2E1C7C09004FFCBF /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63D02AC2E1C7C09004FFCBF /* WidgetKit.framework */; };
 		D63D02AF2E1C7C09004FFCBF /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63D02AE2E1C7C09004FFCBF /* SwiftUI.framework */; };
 		D63D02BC2E1C7C0A004FFCBF /* TodooLiveActivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D63D02AB2E1C7C09004FFCBF /* TodooLiveActivityExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -50,6 +51,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D6309AFB2E1CDC990063D4AF /* AlarmKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AlarmKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/AlarmKit.framework; sourceTree = DEVELOPER_DIR; };
 		D63D02AB2E1C7C09004FFCBF /* TodooLiveActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TodooLiveActivityExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D63D02AC2E1C7C09004FFCBF /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		D63D02AE2E1C7C09004FFCBF /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -110,6 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				D67F1B832E09C95500C7B85D /* Intents.framework in Frameworks */,
+				D6309AFC2E1CDC990063D4AF /* AlarmKit.framework in Frameworks */,
 			);
 		};
 		D65D9AC82DFA509B0051945C /* Frameworks */ = {
@@ -141,6 +144,7 @@
 		D6C0C4AF2E089B2200A20A5D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D6309AFB2E1CDC990063D4AF /* AlarmKit.framework */,
 				D67F1B822E09C95500C7B85D /* Intents.framework */,
 				D6C0C4B02E089B2200A20A5D /* AppIntents.framework */,
 				D6490E502E09B5B4006AB863 /* Intents.framework */,
@@ -265,6 +269,8 @@
 			);
 			mainGroup = D65D9AB42DFA50990051945C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = D65D9AB42DFA50990051945C;
 			projectDirPath = "";
@@ -631,7 +637,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 4GXVT3G2C4;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Fabrizio.TodooTests;
@@ -655,7 +661,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 4GXVT3G2C4;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Fabrizio.TodooTests;
@@ -678,7 +684,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 4GXVT3G2C4;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Fabrizio.TodooUITests;
@@ -701,7 +707,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 4GXVT3G2C4;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Fabrizio.TodooUITests;

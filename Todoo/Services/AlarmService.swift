@@ -21,7 +21,7 @@ actor AlarmService {
 
     @MainActor
     func schedule(note: Note) async throws {
-        let state = manager.authorizationState
+        let state = await manager.authorizationState
         if state == .notDetermined {
             let newState = try await manager.requestAuthorization()
             guard newState == .authorized else { throw AlarmError.noPermission }
@@ -50,17 +50,17 @@ actor AlarmService {
         try? await NotificationService.shared.schedule(note: note)
 
         let liveAttrs = AlarmAttributes(metadata: metadata, endDate: note.date)
-        let initialState = AlarmAttributes.ContentState()
+        let initialContent = AlarmAttributes.ContentState()
         _ = try Activity<AlarmAttributes>.request(
             attributes: liveAttrs,
-            contentState: initialState,
+            content: ActivityContent(state: initialContent, staleDate: nil),
             pushType: nil
         )
     }
 
     @MainActor
     func cancel(noteId: Int32) async throws {
-        let state = manager.authorizationState
+        let state = await manager.authorizationState
         guard state == .authorized else { throw AlarmError.noPermission }
         let id = try Self.uuid(for: noteId)
         _ = try await manager.cancel(id: id)

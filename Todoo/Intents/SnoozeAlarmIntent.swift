@@ -6,6 +6,7 @@
 //
 import AppIntents
 import Foundation
+import AlarmKit
 
 struct SnoozeAlarmIntent: AppIntent {
     static var title: LocalizedStringResource = "Snooze Alarm"

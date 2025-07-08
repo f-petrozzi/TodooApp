@@ -42,33 +42,33 @@ class NoteViewModel: ObservableObject {
     fetchNotes()
   }
 
-  func toggleAlarm(for note: Note) {
-    Task { @MainActor in
-      var updated = note
-      if updated.isAlarmScheduled {
-        try? await AlarmService.shared.cancel(noteId: updated.id)
-        updated.isAlarmScheduled = false
-      } else if updated.date > Date() {
-        try? await AlarmService.shared.schedule(note: updated)
-        updated.isAlarmScheduled = true
-      }
-      if updated.isAlarmScheduled {
-        try? await NotificationService.shared.schedule(note: updated)
-      } else {
-        await NotificationService.shared.cancel(noteId: updated.id)
-      }
-      DatabaseManager.shared.updateNote(updated)
-      notes = DatabaseManager.shared.getAllNotes()
+    func toggleAlarm(for note: Note) {
+        Task { @MainActor in
+            var updated = note
+            if updated.isAlarmScheduled {
+                try? await AlarmService.shared.cancel(noteId: updated.id)
+                updated.isAlarmScheduled = false
+            } else if updated.date > Date() {
+                try? await AlarmService.shared.schedule(note: updated)
+                updated.isAlarmScheduled = true
+            }
+            if updated.isAlarmScheduled {
+                try? await NotificationService.shared.schedule(note: updated)
+            } else {
+                NotificationService.shared.cancel(noteId: updated.id)
+            }
+            DatabaseManager.shared.updateNote(updated)
+            notes = DatabaseManager.shared.getAllNotes()
+        }
     }
-  }
 
-  func delete(note: Note) {
-    Task { @MainActor in
-      if note.isAlarmScheduled {
-        await NotificationService.shared.cancel(noteId: note.id)
-      }
-      DatabaseManager.shared.deleteNote(id: note.id)
-      notes = DatabaseManager.shared.getAllNotes()
+    func delete(note: Note) {
+        Task { @MainActor in
+            if note.isAlarmScheduled {
+                NotificationService.shared.cancel(noteId: note.id)
+            }
+            DatabaseManager.shared.deleteNote(id: note.id)
+            notes = DatabaseManager.shared.getAllNotes()
+        }
     }
-  }
 }
