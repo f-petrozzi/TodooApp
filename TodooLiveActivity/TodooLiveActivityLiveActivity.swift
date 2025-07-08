@@ -7,7 +7,6 @@
 import WidgetKit
 import SwiftUI
 import ActivityKit
-import AppIntents
 import Foundation
 
 public struct NoteAlarmMetadata: Codable, Hashable, Sendable {
@@ -16,10 +15,9 @@ public struct NoteAlarmMetadata: Codable, Hashable, Sendable {
 }
 
 public struct AlarmAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable, Sendable {
-        public var remaining: TimeInterval
-    }
+    public struct ContentState: Codable, Hashable, Sendable {}
     public var metadata: NoteAlarmMetadata
+    public var endDate: Date
 }
 
 @main
@@ -28,10 +26,12 @@ struct TodooLiveActivityLiveActivity: Widget {
         ActivityConfiguration(for: AlarmAttributes.self) { context in
             VStack(spacing: 8) {
                 Text(context.attributes.metadata.title)
-                Text("\(Int(context.state.remaining))s remaining")
+                Text(timerInterval: Date()...context.attributes.endDate,
+                     countsDown: true)
             }
             .activityBackgroundTint(.blue)
             .activitySystemActionForegroundColor(.white)
+            .widgetURL(URL(string: "todoo://alarm?noteId=\(context.attributes.metadata.noteId)"))
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
@@ -41,19 +41,17 @@ struct TodooLiveActivityLiveActivity: Widget {
                     Text(context.attributes.metadata.title)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    Text("\(Int(context.state.remaining))s")
+                    Text(timerInterval: Date()...context.attributes.endDate,
+                         countsDown: true)
                 }
             } compactLeading: {
                 Image(systemName: "bell.fill")
             } compactTrailing: {
-                Text("\(Int(context.state.remaining))s")
+                Text(timerInterval: Date()...context.attributes.endDate,
+                     countsDown: true)
             } minimal: {
                 Image(systemName: "bell.fill")
             }
-            .widgetURL(
-                URL(string: "todoo://alarm?noteId=\(context.attributes.metadata.noteId)")
-            )
-            .keylineTint(.blue)
         }
     }
 }
