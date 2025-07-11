@@ -22,8 +22,6 @@
 		<string>INShortcut</string>
 		<string>RemoveNoteAlarmIntent</string>
 		<string>ScheduleNoteAlarmIntent</string>
-		<string>SnoozeAlarmIntent</string>
-		<string>DismissAlarmIntent</string>
 	</array>
 </dict>
 </plist>

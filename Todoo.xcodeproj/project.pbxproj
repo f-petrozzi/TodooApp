@@ -8,20 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		D6309AFC2E1CDC990063D4AF /* AlarmKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6309AFB2E1CDC990063D4AF /* AlarmKit.framework */; };
-		D63D02AD2E1C7C09004FFCBF /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63D02AC2E1C7C09004FFCBF /* WidgetKit.framework */; };
-		D63D02AF2E1C7C09004FFCBF /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63D02AE2E1C7C09004FFCBF /* SwiftUI.framework */; };
-		D63D02BC2E1C7C0A004FFCBF /* TodooLiveActivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D63D02AB2E1C7C09004FFCBF /* TodooLiveActivityExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D67806F02E20CD8D008DFCA0 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63D02AC2E1C7C09004FFCBF /* WidgetKit.framework */; };
+		D67806F12E20CD8D008DFCA0 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D63D02AE2E1C7C09004FFCBF /* SwiftUI.framework */; };
+		D67806FE2E20CD8F008DFCA0 /* AlarmLiveActivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D67806EF2E20CD8D008DFCA0 /* AlarmLiveActivityExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D67807042E20CF50008DFCA0 /* AlarmKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6309AFB2E1CDC990063D4AF /* AlarmKit.framework */; };
+		D67807062E20CF55008DFCA0 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67807052E20CF55008DFCA0 /* ActivityKit.framework */; };
 		D67F1B832E09C95500C7B85D /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D67F1B822E09C95500C7B85D /* Intents.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D63D02BA2E1C7C0A004FFCBF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D65D9AB52DFA50990051945C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D63D02AA2E1C7C09004FFCBF;
-			remoteInfo = TodooLiveActivityExtension;
-		};
 		D65D9ACC2DFA509B0051945C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D65D9AB52DFA50990051945C /* Project object */;
@@ -36,15 +31,22 @@
 			remoteGlobalIDString = D65D9ABC2DFA50990051945C;
 			remoteInfo = Todoo;
 		};
+		D67806FC2E20CD8F008DFCA0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D65D9AB52DFA50990051945C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D67806EE2E20CD8D008DFCA0;
+			remoteInfo = AlarmLiveActivityExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		D6490E722E09B5B4006AB863 /* Embed Foundation Extensions */ = {
+		D67807032E20CD8F008DFCA0 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			dstPath = "";
 			dstSubfolder = PlugIns;
 			files = (
-				D63D02BC2E1C7C0A004FFCBF /* TodooLiveActivityExtension.appex in Embed Foundation Extensions */,
+				D67806FE2E20CD8F008DFCA0 /* AlarmLiveActivityExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 		};
@@ -52,11 +54,12 @@
 
 /* Begin PBXFileReference section */
 		D6309AFB2E1CDC990063D4AF /* AlarmKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AlarmKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/AlarmKit.framework; sourceTree = DEVELOPER_DIR; };
-		D63D02AB2E1C7C09004FFCBF /* TodooLiveActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TodooLiveActivityExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D63D02AC2E1C7C09004FFCBF /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		D63D02AE2E1C7C09004FFCBF /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		D6490E502E09B5B4006AB863 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		D6490E5B2E09B5B4006AB863 /* IntentsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IntentsUI.framework; path = System/Library/Frameworks/IntentsUI.framework; sourceTree = SDKROOT; };
+		D67806EF2E20CD8D008DFCA0 /* AlarmLiveActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AlarmLiveActivityExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D67807052E20CF55008DFCA0 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/ActivityKit.framework; sourceTree = DEVELOPER_DIR; };
 		D67B009A2DFDE93700A7A3C9 /* Todoo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D67B009B2DFDE93700A7A3C9 /* TodooTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TodooTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D67B009C2DFDE93700A7A3C9 /* TodooUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TodooUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -65,12 +68,22 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		D63D02C02E1C7C0A004FFCBF /* Exceptions for "TodooLiveActivity" folder in "TodooLiveActivityExtension" target */ = {
+		D67807022E20CD8F008DFCA0 /* Exceptions for "AlarmLiveActivity" folder in "AlarmLiveActivityExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = D63D02AA2E1C7C09004FFCBF /* TodooLiveActivityExtension */;
+			target = D67806EE2E20CD8D008DFCA0 /* AlarmLiveActivityExtension */;
+		};
+		D67807082E20D0D8008DFCA0 /* Exceptions for "Todoo" folder in "AlarmLiveActivityExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Attributes/AlarmAttributes.swift,
+				Intents/SnoozeAlarmIntent.swift,
+				Intents/StopAlarmIntent.swift,
+				Services/AlarmService.swift,
+			);
+			target = D67806EE2E20CD8D008DFCA0 /* AlarmLiveActivityExtension */;
 		};
 		D6C0C4AA2E0787D900A20A5D /* Exceptions for "Todoo" folder in "Todoo" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -82,32 +95,26 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D63D02B02E1C7C09004FFCBF /* TodooLiveActivity */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				D63D02C02E1C7C0A004FFCBF /* Exceptions for "TodooLiveActivity" folder in "TodooLiveActivityExtension" target */,
-			);
-			path = TodooLiveActivity;
-			sourceTree = "<group>";
-		};
 		D65D9ABF2DFA50990051945C /* Todoo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				D6C0C4AA2E0787D900A20A5D /* Exceptions for "Todoo" folder in "Todoo" target */,
+				D67807082E20D0D8008DFCA0 /* Exceptions for "Todoo" folder in "AlarmLiveActivityExtension" target */,
 			);
 			path = Todoo;
+			sourceTree = "<group>";
+		};
+		D67806F22E20CD8D008DFCA0 /* AlarmLiveActivity */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D67807022E20CD8F008DFCA0 /* Exceptions for "AlarmLiveActivity" folder in "AlarmLiveActivityExtension" target */,
+			);
+			path = AlarmLiveActivity;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		D63D02A82E1C7C09004FFCBF /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			files = (
-				D63D02AF2E1C7C09004FFCBF /* SwiftUI.framework in Frameworks */,
-				D63D02AD2E1C7C09004FFCBF /* WidgetKit.framework in Frameworks */,
-			);
-		};
 		D65D9ABA2DFA50990051945C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
@@ -125,6 +132,15 @@
 			files = (
 			);
 		};
+		D67806EC2E20CD8D008DFCA0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				D67806F12E20CD8D008DFCA0 /* SwiftUI.framework in Frameworks */,
+				D67806F02E20CD8D008DFCA0 /* WidgetKit.framework in Frameworks */,
+				D67807062E20CF55008DFCA0 /* ActivityKit.framework in Frameworks */,
+				D67807042E20CF50008DFCA0 /* AlarmKit.framework in Frameworks */,
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -135,15 +151,16 @@
 				D67B009A2DFDE93700A7A3C9 /* Todoo.app */,
 				D67B009B2DFDE93700A7A3C9 /* TodooTests.xctest */,
 				D67B009C2DFDE93700A7A3C9 /* TodooUITests.xctest */,
-				D63D02B02E1C7C09004FFCBF /* TodooLiveActivity */,
+				D67806F22E20CD8D008DFCA0 /* AlarmLiveActivity */,
 				D6C0C4AF2E089B2200A20A5D /* Frameworks */,
-				D63D02AB2E1C7C09004FFCBF /* TodooLiveActivityExtension.appex */,
+				D67806EF2E20CD8D008DFCA0 /* AlarmLiveActivityExtension.appex */,
 			);
 			sourceTree = "<group>";
 		};
 		D6C0C4AF2E089B2200A20A5D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D67807052E20CF55008DFCA0 /* ActivityKit.framework */,
 				D6309AFB2E1CDC990063D4AF /* AlarmKit.framework */,
 				D67F1B822E09C95500C7B85D /* Intents.framework */,
 				D6C0C4B02E089B2200A20A5D /* AppIntents.framework */,
@@ -158,24 +175,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D63D02AA2E1C7C09004FFCBF /* TodooLiveActivityExtension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D63D02BD2E1C7C0A004FFCBF /* Build configuration list for PBXNativeTarget "TodooLiveActivityExtension" */;
-			buildPhases = (
-				D63D02A72E1C7C09004FFCBF /* Sources */,
-				D63D02A82E1C7C09004FFCBF /* Frameworks */,
-				D63D02A92E1C7C09004FFCBF /* Resources */,
-			);
-			buildRules = (
-			);
-			fileSystemSynchronizedGroups = (
-				D63D02B02E1C7C09004FFCBF /* TodooLiveActivity */,
-			);
-			name = TodooLiveActivityExtension;
-			productName = TodooLiveActivityExtension;
-			productReference = D63D02AB2E1C7C09004FFCBF /* TodooLiveActivityExtension.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
 		D65D9ABC2DFA50990051945C /* Todoo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D65D9ADF2DFA509B0051945C /* Build configuration list for PBXNativeTarget "Todoo" */;
@@ -183,12 +182,12 @@
 				D65D9AB92DFA50990051945C /* Sources */,
 				D65D9ABA2DFA50990051945C /* Frameworks */,
 				D65D9ABB2DFA50990051945C /* Resources */,
-				D6490E722E09B5B4006AB863 /* Embed Foundation Extensions */,
+				D67807032E20CD8F008DFCA0 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				D63D02BB2E1C7C0A004FFCBF /* PBXTargetDependency */,
+				D67806FD2E20CD8F008DFCA0 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				D65D9ABF2DFA50990051945C /* Todoo */,
@@ -234,6 +233,24 @@
 			productReference = D67B009C2DFDE93700A7A3C9 /* TodooUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		D67806EE2E20CD8D008DFCA0 /* AlarmLiveActivityExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D67806FF2E20CD8F008DFCA0 /* Build configuration list for PBXNativeTarget "AlarmLiveActivityExtension" */;
+			buildPhases = (
+				D67806EB2E20CD8D008DFCA0 /* Sources */,
+				D67806EC2E20CD8D008DFCA0 /* Frameworks */,
+				D67806ED2E20CD8D008DFCA0 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				D67806F22E20CD8D008DFCA0 /* AlarmLiveActivity */,
+			);
+			name = AlarmLiveActivityExtension;
+			productName = AlarmLiveActivityExtension;
+			productReference = D67806EF2E20CD8D008DFCA0 /* AlarmLiveActivityExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -244,9 +261,6 @@
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
-					D63D02AA2E1C7C09004FFCBF = {
-						CreatedOnToolsVersion = 26.0;
-					};
 					D65D9ABC2DFA50990051945C = {
 						CreatedOnToolsVersion = 16.4;
 					};
@@ -257,6 +271,9 @@
 					D65D9AD42DFA509B0051945C = {
 						CreatedOnToolsVersion = 16.4;
 						TestTargetID = D65D9ABC2DFA50990051945C;
+					};
+					D67806EE2E20CD8D008DFCA0 = {
+						CreatedOnToolsVersion = 26.0;
 					};
 				};
 			};
@@ -279,17 +296,12 @@
 				D65D9ABC2DFA50990051945C /* Todoo */,
 				D65D9ACA2DFA509B0051945C /* TodooTests */,
 				D65D9AD42DFA509B0051945C /* TodooUITests */,
-				D63D02AA2E1C7C09004FFCBF /* TodooLiveActivityExtension */,
+				D67806EE2E20CD8D008DFCA0 /* AlarmLiveActivityExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		D63D02A92E1C7C09004FFCBF /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			files = (
-			);
-		};
 		D65D9ABB2DFA50990051945C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
@@ -305,14 +317,14 @@
 			files = (
 			);
 		};
-/* End PBXResourcesBuildPhase section */
-
-/* Begin PBXSourcesBuildPhase section */
-		D63D02A72E1C7C09004FFCBF /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
+		D67806ED2E20CD8D008DFCA0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
 			files = (
 			);
 		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
 		D65D9AB92DFA50990051945C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
@@ -328,14 +340,14 @@
 			files = (
 			);
 		};
+		D67806EB2E20CD8D008DFCA0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D63D02BB2E1C7C0A004FFCBF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D63D02AA2E1C7C09004FFCBF /* TodooLiveActivityExtension */;
-			targetProxy = D63D02BA2E1C7C0A004FFCBF /* PBXContainerItemProxy */;
-		};
 		D65D9ACD2DFA509B0051945C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D65D9ABC2DFA50990051945C /* Todoo */;
@@ -346,72 +358,14 @@
 			target = D65D9ABC2DFA50990051945C /* Todoo */;
 			targetProxy = D65D9AD62DFA509B0051945C /* PBXContainerItemProxy */;
 		};
+		D67806FD2E20CD8F008DFCA0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D67806EE2E20CD8D008DFCA0 /* AlarmLiveActivityExtension */;
+			targetProxy = D67806FC2E20CD8F008DFCA0 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		D63D02BE2E1C7C0A004FFCBF /* Debug configuration for PBXNativeTarget "TodooLiveActivityExtension" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4GXVT3G2C4;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = TodooLiveActivity/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = TodooLiveActivity;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Fabrizio.Todoo.TodooLiveActivity;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D63D02BF2E1C7C0A004FFCBF /* Release configuration for PBXNativeTarget "TodooLiveActivityExtension" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4GXVT3G2C4;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = TodooLiveActivity/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = TodooLiveActivity;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Fabrizio.Todoo.TodooLiveActivity;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		D65D9ADD2DFA509B0051945C /* Debug configuration for PBXProject "Todoo" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -537,7 +491,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Todoo/Todoo.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4GXVT3G2C4;
@@ -585,7 +539,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Todoo/Todoo.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4GXVT3G2C4;
@@ -722,17 +676,72 @@
 			};
 			name = Release;
 		};
+		D67807002E20CD8F008DFCA0 /* Debug configuration for PBXNativeTarget "AlarmLiveActivityExtension" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4GXVT3G2C4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AlarmLiveActivity/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AlarmLiveActivity;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Fabrizio.Todoo.AlarmLiveActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D67807012E20CD8F008DFCA0 /* Release configuration for PBXNativeTarget "AlarmLiveActivityExtension" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4GXVT3G2C4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AlarmLiveActivity/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AlarmLiveActivity;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Fabrizio.Todoo.AlarmLiveActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D63D02BD2E1C7C0A004FFCBF /* Build configuration list for PBXNativeTarget "TodooLiveActivityExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D63D02BE2E1C7C0A004FFCBF /* Debug configuration for PBXNativeTarget "TodooLiveActivityExtension" */,
-				D63D02BF2E1C7C0A004FFCBF /* Release configuration for PBXNativeTarget "TodooLiveActivityExtension" */,
-			);
-			defaultConfigurationName = Release;
-		};
 		D65D9AB82DFA50990051945C /* Build configuration list for PBXProject "Todoo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -762,6 +771,14 @@
 			buildConfigurations = (
 				D65D9AE62DFA509B0051945C /* Debug configuration for PBXNativeTarget "TodooUITests" */,
 				D65D9AE72DFA509B0051945C /* Release configuration for PBXNativeTarget "TodooUITests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		D67806FF2E20CD8F008DFCA0 /* Build configuration list for PBXNativeTarget "AlarmLiveActivityExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D67807002E20CD8F008DFCA0 /* Debug configuration for PBXNativeTarget "AlarmLiveActivityExtension" */,
+				D67807012E20CD8F008DFCA0 /* Release configuration for PBXNativeTarget "AlarmLiveActivityExtension" */,
 			);
 			defaultConfigurationName = Release;
 		};

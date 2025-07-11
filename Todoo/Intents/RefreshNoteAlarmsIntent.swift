@@ -9,25 +9,35 @@ import AppIntents
 import Foundation
 
 struct RefreshNoteAlarmsIntent: AppIntent {
-  static var title: LocalizedStringResource { "Refresh Today’s Alarms" }
-  static var description = IntentDescription("Clears past alarms and sets up today’s alarms")
+    static var title: LocalizedStringResource = "Refresh Today's Alarms"
+    static var description: IntentDescription? = IntentDescription("Clears past alarms and sets up today's alarms")
 
-  @MainActor
-  func perform() async throws -> some IntentResult {
-    let notes = DatabaseManager.shared.getAllNotes()
-    let today = Calendar.current.startOfDay(for: Date())
-    for note in notes {
-      if note.isAlarmScheduled, note.date < Date() {
-        try? await AlarmService.shared.cancel(noteId: note.id)
-        var n = note; n.isAlarmScheduled = false
-        DatabaseManager.shared.updateNote(n)
-      }
-      if note.date >= Date(), Calendar.current.isDate(note.date, inSameDayAs: today) {
-        try await AlarmService.shared.schedule(note: note)
-        var n = note; n.isAlarmScheduled = true
-        DatabaseManager.shared.updateNote(n)
-      }
+    @MainActor
+    func perform() async throws -> some IntentResult {
+        let notes = DatabaseManager.shared.getAllNotes()
+        let todayStart = Calendar.current.startOfDay(for: Date())
+        for note in notes {
+            if note.isAlarmScheduled && note.date < Date(), let alarmID = note.alarmID {
+                try? await AlarmService.shared.cancelAlarm(alarmID: alarmID)
+                var n = note
+                n.isAlarmScheduled = false
+                n.alarmID = nil
+                DatabaseManager.shared.updateNote(n)
+            }
+            if note.date >= todayStart && Calendar.current.isDate(note.date, inSameDayAs: todayStart) {
+                let id = UUID()
+                try? await AlarmService.shared.scheduleAlarm(
+                    noteID: note.id,
+                    alarmID: id,
+                    date: note.date,
+                    title: note.title
+                )
+                var n = note
+                n.isAlarmScheduled = true
+                n.alarmID = id
+                DatabaseManager.shared.updateNote(n)
+            }
+        }
+        return .result()
     }
-    return .result()
-  }
 }

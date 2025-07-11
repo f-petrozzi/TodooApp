@@ -4,88 +4,71 @@
 //
 //  Created by Fabrizio Petrozzi on 7/7/25.
 //
-import AlarmKit
-import ActivityKit
-import SwiftUI
 import Foundation
+import AlarmKit
+import SwiftUI
+import AppIntents
+import ActivityKit
 
-enum AlarmError: Error {
-    case invalidDate
-    case noPermission
-    case uuidCreationFailed
-}
-
-actor AlarmService {
+class AlarmService {
     static let shared = AlarmService()
-    private let manager = AlarmManager.shared
+    private init() {}
 
-    @MainActor
-    func schedule(note: Note) async throws {
-        let state = await manager.authorizationState
-        if state == .notDetermined {
-            let newState = try await manager.requestAuthorization()
-            guard newState == .authorized else { throw AlarmError.noPermission }
-        } else if state != .authorized {
-            throw AlarmError.noPermission
-        }
-
-        guard note.date > Date() else { throw AlarmError.invalidDate }
-        let id = try Self.uuid(for: note.id)
-        try? await manager.cancel(id: id)
-
-        let presentation = Self.makePresentation(for: note.title)
-        let metadata = NoteAlarmMetadata(noteId: note.id, title: note.title)
-        let kitAttrs = AlarmKit.AlarmAttributes<NoteAlarmMetadata>(
-            presentation: presentation,
-            metadata: metadata,
-            tintColor: Color.blue
-        )
-        let schedule = Alarm.Schedule.fixed(note.date)
-        let config = AlarmManager.AlarmConfiguration(
-            schedule: schedule,
-            attributes: kitAttrs
-        )
-        _ = try await manager.schedule(id: id, configuration: config)
-
-        try? await NotificationService.shared.schedule(note: note)
-
-        let liveAttrs = AlarmAttributes(metadata: metadata, endDate: note.date)
-        let initialContent = AlarmAttributes.ContentState()
-        _ = try Activity<AlarmAttributes>.request(
-            attributes: liveAttrs,
-            content: ActivityContent(state: initialContent, staleDate: nil),
-            pushType: nil
-        )
+    func requestAuthorization() async throws {
+        guard AlarmManager.shared.authorizationState == .notDetermined else { return }
+        _ = try await AlarmManager.shared.requestAuthorization()
     }
 
-    @MainActor
-    func cancel(noteId: Int32) async throws {
-        let state = await manager.authorizationState
-        guard state == .authorized else { throw AlarmError.noPermission }
-        let id = try Self.uuid(for: noteId)
-        _ = try await manager.cancel(id: id)
-        NotificationService.shared.cancel(noteId: noteId)
-    }
-
-    private static func makePresentation(for title: String) -> AlarmPresentation {
-        let stop = AlarmButton(text: "Dismiss", textColor: .white, systemImageName: "xmark.circle.fill")
-        let snooze = AlarmButton(text: "Snooze", textColor: .white, systemImageName: "repeat")
+    func scheduleAlarm(
+        noteID: Int32,
+        alarmID: UUID,
+        date: Date,
+        title: String
+    ) async throws {
         let alert = AlarmPresentation.Alert(
             title: LocalizedStringResource(stringLiteral: title),
-            stopButton: stop,
-            secondaryButton: snooze,
+            stopButton: AlarmButton(
+                text: LocalizedStringResource(stringLiteral: "Done"),
+                textColor: .white,
+                systemImageName: "xmark"
+            ),
+            secondaryButton: AlarmButton(
+                text: LocalizedStringResource(stringLiteral: "Snooze"),
+                textColor: .white,
+                systemImageName: "moon.zzz"
+            ),
             secondaryButtonBehavior: .countdown
         )
-        return AlarmPresentation(alert: alert)
+
+        let attributes = AlarmAttributes(
+            presentation: AlarmPresentation(alert: alert),
+            metadata: NoteAlarmMetadata(noteID: noteID, title: title),
+            tintColor: .accentColor
+        )
+
+        let configuration: AlarmManager.AlarmConfiguration<NoteAlarmMetadata> = .alarm(
+            schedule: .fixed(date),
+            attributes: attributes,
+            stopIntent: StopAlarmIntent(alarmIDString: alarmID.uuidString),
+            secondaryIntent: SnoozeAlarmIntent(alarmIDString: alarmID.uuidString),
+            sound: .default
+        )
+
+        _ = try await AlarmManager.shared.schedule(
+            id: alarmID,
+            configuration: configuration
+        )
     }
 
-    nonisolated private static func uuid(for noteId: Int32) throws -> UUID {
-        let hex = String(noteId, radix: 16)
-        let padded = String(repeating: "0", count: 12 - hex.count) + hex
-        let str = "00000000-0000-0000-0000-\(padded)"
-        guard let uuid = UUID(uuidString: str) else {
-            throw AlarmError.uuidCreationFailed
-        }
-        return uuid
+    func cancelAlarm(alarmID: UUID) async throws {
+        try await AlarmManager.shared.cancel(id: alarmID)
+    }
+
+    func stopAlarm(alarmID: UUID) async throws {
+        try await AlarmManager.shared.stop(id: alarmID)
+    }
+
+    func snoozeAlarm(alarmID: UUID) async throws {
+        try await AlarmManager.shared.countdown(id: alarmID)
     }
 }

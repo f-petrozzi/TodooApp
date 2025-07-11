@@ -4,11 +4,13 @@
 //
 //  Created by Fabrizio Petrozzi on 7/7/25.
 //
-import ActivityKit
+import AlarmKit
 import Foundation
 
-public struct AlarmAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable, Sendable {}
-    public var metadata: NoteAlarmMetadata
-    public var endDate: Date
+@MainActor
+public struct NoteAlarmMetadata: AlarmMetadata, Codable {
+    public let noteID: Int32
+    public let title: String
 }
+
+public typealias AlarmAttributes = AlarmKit.AlarmAttributes<NoteAlarmMetadata>

@@ -14,4 +14,5 @@ struct Note: Identifiable, Codable {
     var date: Date
     var isCompleted: Bool
     var isAlarmScheduled: Bool = false
+    var alarmID: UUID?
 }

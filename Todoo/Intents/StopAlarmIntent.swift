@@ -1,5 +1,5 @@
 //
-//  SnoozeAlarmIntent.swift
+//  StopAlarmIntent.swift
 //  Todoo
 //
 //  Created by Fabrizio Petrozzi on 7/11/25.
@@ -7,8 +7,8 @@
 import AppIntents
 import AlarmKit
 
-struct SnoozeAlarmIntent: LiveActivityIntent {
-    static var title: LocalizedStringResource = "Snooze Alarm"
+struct StopAlarmIntent: LiveActivityIntent {
+    static var title: LocalizedStringResource = "Stop Alarm"
     static var openAppWhenRun: Bool = true
 
     @Parameter(title: "Alarm ID")
@@ -26,7 +26,7 @@ struct SnoozeAlarmIntent: LiveActivityIntent {
         guard let alarmID = UUID(uuidString: alarmIDString) else {
             return .result()
         }
-        try await AlarmManager.shared.countdown(id: alarmID)
+        try await AlarmManager.shared.stop(id: alarmID)
         return .result()
     }
 }
