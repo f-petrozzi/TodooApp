@@ -7,17 +7,49 @@
 import Foundation
 
 class NoteViewModel: ObservableObject {
-    @Published var notes: [Note] = []
+    @Published var allNotes: [Note] = []
+    @Published var sectionedNotes: [FilterCategory: [Note]] = [:]
+    @Published var selectedCategories: Set<FilterCategory> = Set(FilterCategory.allCases)
+    @Published var currentSort: DatabaseManager.SortOption = .alarm
 
     init() {
         fetchNotes()
     }
 
     func fetchNotes() {
-        notes = DatabaseManager.shared.getAllNotes()
+        allNotes = DatabaseManager.shared.getAllNotes()
+
+        var dict: [FilterCategory: [Note]] = [:]
+        for category in selectedCategories {
+            let notesForCategory = DatabaseManager.shared.fetchNotes(
+                category: category,
+                sort: currentSort
+            )
+            dict[category] = notesForCategory
+        }
+        sectionedNotes = dict
     }
 
-    func addNote(title: String, description: String, date: Date, parentId: Int32?) {
+    func toggleCategory(_ category: FilterCategory) {
+        if selectedCategories.contains(category) {
+            selectedCategories.remove(category)
+        } else {
+            selectedCategories.insert(category)
+        }
+        fetchNotes()
+    }
+
+    func setSortOption(_ sort: DatabaseManager.SortOption) {
+        currentSort = sort
+        fetchNotes()
+    }
+
+    func addNote(
+        title: String,
+        description: String,
+        date: Date,
+        parentId: Int32?
+    ) {
         let newNote = Note(
             id: 0,
             parentId: parentId,
@@ -30,14 +62,14 @@ class NoteViewModel: ObservableObject {
         fetchNotes()
     }
 
-    func deleteNote(id: Int32) {
-        DatabaseManager.shared.deleteNote(id: id)
-        fetchNotes()
-    }
-
     func toggleComplete(note: Note) {
         var updated = note
         updated.isCompleted.toggle()
+        if updated.isCompleted {
+            updated.completedAt = Date()
+        } else {
+            updated.completedAt = nil
+        }
         DatabaseManager.shared.updateNote(updated)
         fetchNotes()
     }
@@ -61,8 +93,8 @@ class NoteViewModel: ObservableObject {
     func toggleAlarm(for note: Note) {
         Task { @MainActor in
             var updated = note
-            if updated.isAlarmScheduled {
-                try? await AlarmService.shared.cancelAlarm(alarmID: updated.alarmID!)
+            if updated.isAlarmScheduled, let aid = updated.alarmID {
+                try? await AlarmService.shared.cancelAlarm(alarmID: aid)
                 updated.isAlarmScheduled = false
             } else if updated.date > Date() {
                 try? await AlarmService.shared.requestAuthorization()
@@ -81,10 +113,22 @@ class NoteViewModel: ObservableObject {
         }
     }
 
+    func archive(note: Note) {
+        var updated = note
+        updated.isArchived = true
+        DatabaseManager.shared.updateNote(updated)
+        fetchNotes()
+    }
+
+    func cleanupCompletedNotes() {
+        DatabaseManager.shared.cleanupCompletedNotes()
+        fetchNotes()
+    }
+
     func delete(note: Note) {
         Task { @MainActor in
-            if note.isAlarmScheduled {
-                try? await AlarmService.shared.cancelAlarm(alarmID: note.alarmID!)
+            if note.isAlarmScheduled, let aid = note.alarmID {
+                try? await AlarmService.shared.cancelAlarm(alarmID: aid)
             }
             DatabaseManager.shared.deleteNote(id: note.id)
             fetchNotes()

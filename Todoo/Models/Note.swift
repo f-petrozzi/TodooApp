@@ -6,7 +6,7 @@
 //
 import Foundation
 
-struct Note: Identifiable, Codable {
+struct Note: Identifiable, Codable, Equatable {
     var id: Int32 = 0
     var parentId: Int32?
     var title: String
@@ -14,5 +14,9 @@ struct Note: Identifiable, Codable {
     var date: Date
     var isCompleted: Bool
     var isAlarmScheduled: Bool = false
-    var alarmID: UUID?
+    var alarmID: UUID? = nil
+    var createdAt: Date = Date()
+    var completedAt: Date? = nil
+    var isArchived: Bool = false
+    var recurrenceRule: String? = nil
 }

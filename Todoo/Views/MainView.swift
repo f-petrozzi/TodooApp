@@ -16,6 +16,7 @@ struct MainView: View {
 
   @State private var showingAddNote = false
   @State private var showingGenerate = false
+  @State private var showingCategoryPicker = false
   @State private var currentParentId: Int32? = nil
   @State private var expandedParents = Set<Int32>()
   @State private var showHelpOverlay = false
@@ -25,6 +26,11 @@ struct MainView: View {
       contentList
         .navigationTitle("Todoo")
         .toolbar {
+          ToolbarItemGroup(placement: .navigationBarLeading) {
+            Button { showingCategoryPicker = true } label: {
+              Image(systemName: "line.horizontal.3.decrease.circle")
+            }
+          }
           ToolbarItemGroup(placement: .navigationBarTrailing) {
             Button { showingGenerate = true } label: {
               Image(systemName: "sparkles").iconButtonStyle()
@@ -35,6 +41,14 @@ struct MainView: View {
           }
         }
         .accentColor(Theme.accent)
+        .sheet(isPresented: $showingCategoryPicker) {
+          CategoryPickerView(
+            selectedCategories: $viewModel.selectedCategories
+          ) {
+            showingCategoryPicker = false
+            viewModel.fetchNotes()
+          }
+        }
     }
     .onAppear { viewModel.fetchNotes() }
     .onReceive(
@@ -66,85 +80,98 @@ struct MainView: View {
   }
 
   private var contentList: some View {
-    List {
-      ForEach(viewModel.notes.filter { $0.parentId == nil }) { note in
+    let categories = FilterCategory.allCases
+      .filter { viewModel.selectedCategories.contains($0) }
+      .sorted { $0.displayName < $1.displayName }
+
+    return List {
+      ForEach(categories, id: \.self) { category in
+        sectionView(for: category)
+          .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+          .listRowBackground(Color.clear)
+          .listRowSeparator(.hidden, edges: .all)
+      }
+    }
+    .listStyle(.plain)
+    .listRowSeparator(.hidden, edges: .all)
+    .listSectionSeparator(.hidden)
+    .listRowBackground(Color.clear)
+    .scrollContentBackground(.hidden)
+    .background(Theme.background)
+    .animation(.default, value: viewModel.sectionedNotes)
+  }
+
+  @ViewBuilder
+  private func sectionView(for category: FilterCategory) -> some View {
+    Section(
+      header:
+        Text(category.displayName)
+          .padding(.leading, 16)
+    ) {
+      let notesForCategory = viewModel.sectionedNotes[category] ?? []
+      let parents = notesForCategory.filter { $0.parentId == nil }
+
+      ForEach(parents) { parent in
+        let children = viewModel.allNotes.filter { $0.parentId == parent.id }
+
         NoteRow(
-          note: note,
-          children: viewModel.notes.filter { $0.parentId == note.id },
+          note: parent,
+          children: children,
           expandedParents: $expandedParents,
           viewModel: viewModel,
           showHelp: { showHelpOverlay = true },
           isParent: true,
-          onAddChild: { currentParentId = note.id }
+          onAddChild: { currentParentId = parent.id }
         )
+        .listRowInsets(EdgeInsets(top: 2, leading: 16, bottom: 2, trailing: 16))
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden, edges: .all)
 
-        if expandedParents.contains(note.id) {
-          let children = viewModel.notes.filter { $0.parentId == note.id }
+        if expandedParents.contains(parent.id) {
           ForEach(children) { child in
             HStack {
-              Color.clear.frame(width: 0)
-              Text(child.title)
-                .font(Theme.bodyFont)
-                .foregroundColor(.primary)
-              Spacer()
-              Button {
-                viewModel.toggleComplete(note: child)
-              } label: {
-                Image(
-                  systemName: child.isCompleted
-                    ? "checkmark.circle.fill"
-                    : "circle"
-                )
-              }
-              .buttonStyle(.plain)
+              Spacer().frame(width: 16)
+              NoteRow(
+                note: child,
+                children: [],
+                expandedParents: $expandedParents,
+                viewModel: viewModel,
+                showHelp: { showHelpOverlay = true },
+                isParent: false,
+                onAddChild: { }
+              )
             }
-            .cardStyle()
-            .transition(
-              .move(edge: .top)
-                .combined(with: .opacity)
-            )
-            .swipeActions(edge: .trailing) {
-              Button(role: .destructive) {
-                viewModel.delete(note: child)
-                if viewModel.notes
-                  .filter({ $0.parentId == note.id })
-                  .isEmpty
-                {
-                  expandedParents.remove(note.id)
-                }
-              } label: {
-                Label("Delete", systemImage: "trash")
-              }
-            }
+            .listRowInsets(EdgeInsets(top: 2, leading: 32, bottom: 2, trailing: 16))
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden, edges: .all)
           }
 
           if !children.isEmpty {
             HStack {
-              Spacer()
               Button {
-                currentParentId = note.id
+                currentParentId = parent.id
               } label: {
                 Image(systemName: "plus.circle")
-                  .iconButtonStyle(size: 22)
+                  .font(.title3)
+                  .foregroundColor(.secondary)
               }
-              Spacer()
             }
-            .padding(.vertical, 2)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 4)
+            .listRowInsets(EdgeInsets(top: 2, leading: 32, bottom: 2, trailing: 16))
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden, edges: .all)
           }
         }
       }
     }
-    .listStyle(.plain)
-    .scrollContentBackground(.hidden)
-    .background(Theme.background)
   }
 }
 
 struct HelpOverlayView: View {
   var body: some View {
     VStack(spacing: 16) {
-      Text("Help")
-        .font(.headline)
+      Text("Help").font(.headline)
       Text("Here you can show tips and instructions.")
         .multilineTextAlignment(.center)
       Button("Dismiss") { }
