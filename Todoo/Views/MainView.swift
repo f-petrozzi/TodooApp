@@ -8,174 +8,242 @@ import SwiftUI
 import AppIntents
 
 extension Int32: @retroactive Identifiable {
-  public var id: Int32 { self }
+    public var id: Int32 { self }
 }
 
 struct MainView: View {
-  @StateObject var viewModel: NoteViewModel
-
-  @State private var showingAddNote = false
-  @State private var showingGenerate = false
-  @State private var showingCategoryPicker = false
-  @State private var currentParentId: Int32? = nil
-  @State private var expandedParents = Set<Int32>()
-  @State private var showHelpOverlay = false
-
-  var body: some View {
-    NavigationView {
-      contentList
-        .navigationTitle("Todoo")
-        .toolbar {
-          ToolbarItemGroup(placement: .navigationBarLeading) {
-            Button { showingCategoryPicker = true } label: {
-              Image(systemName: "line.horizontal.3.decrease.circle")
-            }
-          }
-          ToolbarItemGroup(placement: .navigationBarTrailing) {
-            Button { showingGenerate = true } label: {
-              Image(systemName: "sparkles").iconButtonStyle()
-            }
-            Button { showingAddNote = true } label: {
-              Image(systemName: "plus").iconButtonStyle()
-            }
-          }
+    @StateObject var viewModel: NoteViewModel
+    
+    @State private var showingAddNote = false
+    @State private var showingGenerate = false
+    @State private var showingCategoryPicker = false
+    @State private var currentParentId: Int32? = nil
+    @State private var expandedParents = Set<Int32>()
+    @State private var showHelpOverlay = false
+    
+    @State private var isSearching = false
+    @FocusState private var searchFieldIsFocused: Bool
+    
+    var body: some View {
+        NavigationView {
+            contentList
+                .navigationTitle(isSearching ? "" : "Todoo")
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        HStack(spacing: 12) {
+                            Button {
+                                showingCategoryPicker = true
+                            } label: {
+                                Image(systemName: "line.horizontal.3.decrease.circle")
+                            }
+                            
+                            if isSearching {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "magnifyingglass")
+                                    TextField("Search notes", text: $viewModel.searchText)
+                                        .textFieldStyle(.plain)
+                                        .focused($searchFieldIsFocused)
+                                    Button("Cancel") {
+                                        withAnimation {
+                                            isSearching = false
+                                            viewModel.searchText = ""
+                                        }
+                                    }
+                                    .font(.subheadline)
+                                }
+                                .padding(.horizontal, 8)
+                                .frame(height: 36)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Color(.systemBackground))
+                                )
+                                .onAppear { searchFieldIsFocused = true }
+                            } else {
+                                Button {
+                                    withAnimation { isSearching = true }
+                                } label: {
+                                    Image(systemName: "magnifyingglass")
+                                }
+                            }
+                        }
+                    }
+                    
+                    ToolbarItemGroup(placement: .navigationBarTrailing) {
+                        Button { showingGenerate = true } label: {
+                            Image(systemName: "sparkles").iconButtonStyle()
+                        }
+                        Button { showingAddNote = true } label: {
+                            Image(systemName: "plus").iconButtonStyle()
+                        }
+                    }
+                }
+                .accentColor(Theme.accent)
+                .sheet(isPresented: $showingCategoryPicker) {
+                    CategoryPickerView(
+                        selectedCategories: $viewModel.selectedCategories,
+                        sortOption:         $viewModel.currentSort
+                    ) {
+                        showingCategoryPicker = false
+                        viewModel.fetchNotes()
+                    }
+                }
         }
-        .accentColor(Theme.accent)
-        .sheet(isPresented: $showingCategoryPicker) {
-          CategoryPickerView(
-            selectedCategories: $viewModel.selectedCategories
-          ) {
-            showingCategoryPicker = false
-            viewModel.fetchNotes()
-          }
+        .onAppear { viewModel.fetchNotes() }
+        .onReceive(
+            NotificationCenter.default.publisher(
+                for: UIApplication.didBecomeActiveNotification
+            )
+        ) { _ in viewModel.fetchNotes() }
+        .sheet(isPresented: $showingAddNote) {
+            AddNoteView(viewModel: viewModel, parentId: nil)
+                .popupStyle()
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.hidden)
+        }
+        .sheet(isPresented: $showingGenerate) {
+            GenerateNotesView(viewModel: viewModel)
+                .popupStyle()
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.hidden)
+        }
+        .sheet(item: $currentParentId) { parent in
+            AddNoteView(viewModel: viewModel, parentId: parent)
+                .popupStyle()
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.hidden)
         }
     }
-    .onAppear { viewModel.fetchNotes() }
-    .onReceive(
-      NotificationCenter.default.publisher(
-        for: UIApplication.didBecomeActiveNotification
-      )
-    ) { _ in viewModel.fetchNotes() }
-    .sheet(isPresented: $showingAddNote) {
-      AddNoteView(viewModel: viewModel, parentId: nil)
-        .popupStyle()
-        .presentationDetents([.medium])
-        .presentationDragIndicator(.hidden)
-    }
-    .sheet(isPresented: $showingGenerate) {
-      GenerateNotesView(viewModel: viewModel)
-        .popupStyle()
-        .presentationDetents([.medium])
-        .presentationDragIndicator(.hidden)
-    }
-    .sheet(item: $currentParentId) { parent in
-      AddNoteView(viewModel: viewModel, parentId: parent)
-        .popupStyle()
-        .presentationDetents([.medium])
-        .presentationDragIndicator(.hidden)
-    }
-    .sheet(isPresented: $showHelpOverlay) {
-      HelpOverlayView()
-    }
-  }
-
-  private var contentList: some View {
-    let categories = FilterCategory.allCases
-      .filter { viewModel.selectedCategories.contains($0) }
-      .sorted { $0.displayName < $1.displayName }
-
-    return List {
-      ForEach(categories, id: \.self) { category in
-        sectionView(for: category)
-          .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-          .listRowBackground(Color.clear)
-          .listRowSeparator(.hidden, edges: .all)
-      }
-    }
-    .listStyle(.plain)
-    .listRowSeparator(.hidden, edges: .all)
-    .listSectionSeparator(.hidden)
-    .listRowBackground(Color.clear)
-    .scrollContentBackground(.hidden)
-    .background(Theme.background)
-    .animation(.default, value: viewModel.sectionedNotes)
-  }
-
-  @ViewBuilder
-  private func sectionView(for category: FilterCategory) -> some View {
-    Section(
-      header:
-        Text(category.displayName)
-          .padding(.leading, 16)
-    ) {
-      let notesForCategory = viewModel.sectionedNotes[category] ?? []
-      let parents = notesForCategory.filter { $0.parentId == nil }
-
-      ForEach(parents) { parent in
-        let children = viewModel.allNotes.filter { $0.parentId == parent.id }
-
-        NoteRow(
-          note: parent,
-          children: children,
-          expandedParents: $expandedParents,
-          viewModel: viewModel,
-          showHelp: { showHelpOverlay = true },
-          isParent: true,
-          onAddChild: { currentParentId = parent.id }
-        )
-        .listRowInsets(EdgeInsets(top: 2, leading: 16, bottom: 2, trailing: 16))
-        .listRowBackground(Color.clear)
+    
+    private var contentList: some View {
+        List {
+            if viewModel.searchText.isEmpty {
+                ForEach(
+                    FilterCategory.allCases
+                        .filter { viewModel.selectedCategories.contains($0) }
+                        .sorted { $0.displayName < $1.displayName },
+                    id: \.self
+                ) { category in
+                    sectionView(for: category)
+                        .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden, edges: .all)
+                }
+            } else {
+                let parentMatches = viewModel.searchResults.filter { $0.parentId == nil }
+                ForEach(parentMatches) { parent in
+                    NoteRow(
+                        note: parent,
+                        children: [],
+                        expandedParents: $expandedParents,
+                        viewModel: viewModel,
+                        showHelp: { showHelpOverlay = true },
+                        isParent: true,
+                        onAddChild: { currentParentId = parent.id }
+                    )
+                    .listRowInsets(.init(top: 2, leading: 16, bottom: 2, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden, edges: .all)
+                }
+                let subMatches = viewModel.searchResults.filter { $0.parentId != nil }
+                let parentIDs = Array(Set(subMatches.compactMap { $0.parentId }))
+                ForEach(parentIDs, id: \.self) { pid in
+                    if let parent = viewModel.allNotes.first(where: { $0.id == pid }) {
+                        Text(parent.title)
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                            .padding(.leading, 16)
+                        ForEach(subMatches.filter { $0.parentId == pid }) { child in
+                            HStack {
+                                Spacer().frame(width: 16)
+                                NoteRow(
+                                    note: child,
+                                    children: [],
+                                    expandedParents: $expandedParents,
+                                    viewModel: viewModel,
+                                    showHelp: { showHelpOverlay = true },
+                                    isParent: false,
+                                    onAddChild: { }
+                                )
+                            }
+                            .listRowInsets(.init(top: 2, leading: 32, bottom: 2, trailing: 16))
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden, edges: .all)
+                        }
+                    }
+                }
+            }
+        }
+        .listStyle(.plain)
         .listRowSeparator(.hidden, edges: .all)
-
-        if expandedParents.contains(parent.id) {
-          ForEach(children) { child in
-            HStack {
-              Spacer().frame(width: 16)
-              NoteRow(
-                note: child,
-                children: [],
-                expandedParents: $expandedParents,
-                viewModel: viewModel,
-                showHelp: { showHelpOverlay = true },
-                isParent: false,
-                onAddChild: { }
-              )
+        .listSectionSeparator(.hidden)
+        .listRowBackground(Color.clear)
+        .scrollContentBackground(.hidden)
+        .background(Theme.background)
+        .animation(.default, value: viewModel.searchText)
+    }
+    
+    @ViewBuilder
+    private func sectionView(for category: FilterCategory) -> some View {
+        Section(
+            header:
+                Text(category.displayName)
+                    .padding(.leading, 16)
+        ) {
+            let notesForCategory = viewModel.sectionedNotes[category] ?? []
+            let parents = notesForCategory.filter { $0.parentId == nil }
+            
+            ForEach(parents) { parent in
+                let children = viewModel.allNotes.filter { $0.parentId == parent.id }
+                
+                NoteRow(
+                    note: parent,
+                    children: children,
+                    expandedParents: $expandedParents,
+                    viewModel: viewModel,
+                    showHelp: { showHelpOverlay = true },
+                    isParent: true,
+                    onAddChild: { currentParentId = parent.id }
+                )
+                .listRowInsets(.init(top: 2, leading: 16, bottom: 2, trailing: 16))
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden, edges: .all)
+                
+                if expandedParents.contains(parent.id) {
+                    ForEach(children) { child in
+                        HStack {
+                            Spacer().frame(width: 16)
+                            NoteRow(
+                                note: child,
+                                children: [],
+                                expandedParents: $expandedParents,
+                                viewModel: viewModel,
+                                showHelp: { showHelpOverlay = true },
+                                isParent: false,
+                                onAddChild: { }
+                            )
+                        }
+                        .listRowInsets(.init(top: 2, leading: 32, bottom: 2, trailing: 16))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden, edges: .all)
+                    }
+                    if !children.isEmpty {
+                        HStack {
+                            Button {
+                                currentParentId = parent.id
+                            } label: {
+                                Image(systemName: "plus.circle")
+                                    .font(.title3)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 4)
+                        .listRowInsets(.init(top: 2, leading: 32, bottom: 2, trailing: 16))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden, edges: .all)
+                    }
+                }
             }
-            .listRowInsets(EdgeInsets(top: 2, leading: 32, bottom: 2, trailing: 16))
-            .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden, edges: .all)
-          }
-
-          if !children.isEmpty {
-            HStack {
-              Button {
-                currentParentId = parent.id
-              } label: {
-                Image(systemName: "plus.circle")
-                  .font(.title3)
-                  .foregroundColor(.secondary)
-              }
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 4)
-            .listRowInsets(EdgeInsets(top: 2, leading: 32, bottom: 2, trailing: 16))
-            .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden, edges: .all)
-          }
         }
-      }
     }
-  }
-}
-
-struct HelpOverlayView: View {
-  var body: some View {
-    VStack(spacing: 16) {
-      Text("Help").font(.headline)
-      Text("Here you can show tips and instructions.")
-        .multilineTextAlignment(.center)
-      Button("Dismiss") { }
-    }
-    .padding()
-  }
 }

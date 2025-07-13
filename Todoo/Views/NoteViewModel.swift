@@ -11,6 +11,16 @@ class NoteViewModel: ObservableObject {
     @Published var sectionedNotes: [FilterCategory: [Note]] = [:]
     @Published var selectedCategories: Set<FilterCategory> = Set(FilterCategory.allCases)
     @Published var currentSort: DatabaseManager.SortOption = .alarm
+    
+    @Published var searchText: String = ""
+    
+    var searchResults: [Note] {
+        guard !searchText.isEmpty else { return [] }
+        return allNotes.filter {
+            $0.title.localizedCaseInsensitiveContains(searchText)
+            || $0.description.localizedCaseInsensitiveContains(searchText)
+        }
+    }
 
     init() {
         fetchNotes()
