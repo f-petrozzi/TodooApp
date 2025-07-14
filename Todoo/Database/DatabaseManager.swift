@@ -21,16 +21,8 @@ class DatabaseManager {
         guard let fileURL = FileManager.default
             .urls(for: .documentDirectory, in: .userDomainMask)
             .first?
-            .appendingPathComponent(dbName)
-        else {
-            print("Failed to construct database file URL")
-            return
-        }
-        if sqlite3_open(fileURL.path, &db) != SQLITE_OK {
-            print("Error opening database at \(fileURL.path)")
-        } else {
-            print("Database opened at \(fileURL.path)")
-        }
+            .appendingPathComponent(dbName) else { return }
+        sqlite3_open(fileURL.path, &db)
     }
 
     private func performMigrations() {
@@ -40,6 +32,7 @@ class DatabaseManager {
         addCompletedAtColumn()
         addArchivedColumn()
         addRecurrenceRuleColumn()
+        addDeletionColumns()
         createIndexes()
         createFTSTable()
     }
@@ -55,59 +48,66 @@ class DatabaseManager {
             isCompleted INTEGER,
             isAlarmScheduled INTEGER DEFAULT 0,
             alarmID TEXT,
+            createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+            completedAt TEXT,
+            isArchived INTEGER DEFAULT 0,
+            recurrenceRule TEXT,
+            isMarkedForDeletion INTEGER DEFAULT 0,
+            deletionScheduledAt TEXT,
             FOREIGN KEY(parentId) REFERENCES Notes(id)
         );
         """
         var stmt: OpaquePointer?
-        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
-            _ = sqlite3_step(stmt)
-        }
+        sqlite3_prepare_v2(db, sql, -1, &stmt, nil)
+        sqlite3_step(stmt)
         sqlite3_finalize(stmt)
     }
 
     private func addAlarmIDColumn() {
         let sql = "ALTER TABLE Notes ADD COLUMN alarmID TEXT"
         var stmt: OpaquePointer?
-        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
-            _ = sqlite3_step(stmt)
-        }
+        sqlite3_prepare_v2(db, sql, -1, &stmt, nil)
+        sqlite3_step(stmt)
         sqlite3_finalize(stmt)
     }
 
     private func addCreatedAtColumn() {
         let sql = "ALTER TABLE Notes ADD COLUMN createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP"
         var stmt: OpaquePointer?
-        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
-            _ = sqlite3_step(stmt)
-        }
+        sqlite3_prepare_v2(db, sql, -1, &stmt, nil)
+        sqlite3_step(stmt)
         sqlite3_finalize(stmt)
     }
 
     private func addCompletedAtColumn() {
         let sql = "ALTER TABLE Notes ADD COLUMN completedAt TEXT"
         var stmt: OpaquePointer?
-        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
-            _ = sqlite3_step(stmt)
-        }
+        sqlite3_prepare_v2(db, sql, -1, &stmt, nil)
+        sqlite3_step(stmt)
         sqlite3_finalize(stmt)
     }
 
     private func addArchivedColumn() {
         let sql = "ALTER TABLE Notes ADD COLUMN isArchived INTEGER NOT NULL DEFAULT 0"
         var stmt: OpaquePointer?
-        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
-            _ = sqlite3_step(stmt)
-        }
+        sqlite3_prepare_v2(db, sql, -1, &stmt, nil)
+        sqlite3_step(stmt)
         sqlite3_finalize(stmt)
     }
 
     private func addRecurrenceRuleColumn() {
         let sql = "ALTER TABLE Notes ADD COLUMN recurrenceRule TEXT"
         var stmt: OpaquePointer?
-        if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
-            _ = sqlite3_step(stmt)
-        }
+        sqlite3_prepare_v2(db, sql, -1, &stmt, nil)
+        sqlite3_step(stmt)
         sqlite3_finalize(stmt)
+    }
+
+    private func addDeletionColumns() {
+        let sql1 = "ALTER TABLE Notes ADD COLUMN isMarkedForDeletion INTEGER NOT NULL DEFAULT 0"
+        execute(sql: sql1)
+        let sql2 = "ALTER TABLE Notes ADD COLUMN deletionScheduledAt TEXT"
+        execute(sql: sql2)
     }
 
     private func createIndexes() {
@@ -137,6 +137,20 @@ class DatabaseManager {
         sqlite3_finalize(stmt)
     }
 
+    func markOverdueNotesForAutoArchive() {
+        let sql = """
+        UPDATE Notes
+           SET isArchived = 1,
+               isMarkedForDeletion = 1,
+               deletionScheduledAt = strftime('%Y-%m-%dT%H:%M:%SZ','now','+1 day')
+         WHERE datetime(date, 'localtime') < datetime('now','localtime','-24 hours')
+           AND isArchived = 0
+           AND isCompleted = 0
+           AND recurrenceRule IS NULL
+        """
+        execute(sql: sql)
+    }
+
     func insertNote(_ note: Note) {
         let sql = """
         INSERT INTO Notes
@@ -161,7 +175,7 @@ class DatabaseManager {
             } else {
                 sqlite3_bind_null(stmt, 7)
             }
-            _ = sqlite3_step(stmt)
+            sqlite3_step(stmt)
         }
         sqlite3_finalize(stmt)
     }
@@ -171,7 +185,8 @@ class DatabaseManager {
         let sql = """
         SELECT id, parentId, title, description, date,
                isCompleted, isAlarmScheduled, alarmID,
-               createdAt, completedAt, isArchived, recurrenceRule
+               createdAt, completedAt, isArchived, recurrenceRule,
+               isMarkedForDeletion, deletionScheduledAt
         FROM Notes
         """
         var stmt: OpaquePointer?
@@ -193,9 +208,14 @@ class DatabaseManager {
                 let completedAtString = sqlite3_column_text(stmt, 9).flatMap { String(cString: $0) }
                 let isArchived = sqlite3_column_int(stmt, 10) == 1
                 let recurrenceRule = sqlite3_column_text(stmt, 11).flatMap { String(cString: $0) }
+                let isMarkedForDeletion = sqlite3_column_int(stmt, 12) == 1
+                let deletionScheduledAtString = sqlite3_column_text(stmt, 13).flatMap { String(cString: $0) }
                 let date = ISO8601DateFormatter().date(from: dateString) ?? Date()
                 let createdAt = ISO8601DateFormatter().date(from: createdAtString) ?? Date()
                 let completedAt = completedAtString.flatMap {
+                    ISO8601DateFormatter().date(from: $0)
+                }
+                let deletionScheduledAt = deletionScheduledAtString.flatMap {
                     ISO8601DateFormatter().date(from: $0)
                 }
                 notes.append(
@@ -211,7 +231,9 @@ class DatabaseManager {
                         createdAt: createdAt,
                         completedAt: completedAt,
                         isArchived: isArchived,
-                        recurrenceRule: recurrenceRule
+                        recurrenceRule: recurrenceRule,
+                        isMarkedForDeletion: isMarkedForDeletion,
+                        deletionScheduledAt: deletionScheduledAt
                     )
                 )
             }
@@ -224,7 +246,8 @@ class DatabaseManager {
         let sql = """
         SELECT id, parentId, title, description, date,
                isCompleted, isAlarmScheduled, alarmID,
-               createdAt, completedAt, isArchived, recurrenceRule
+               createdAt, completedAt, isArchived, recurrenceRule,
+               isMarkedForDeletion, deletionScheduledAt
         FROM Notes
         WHERE id = ?
         """
@@ -252,12 +275,17 @@ class DatabaseManager {
         let completedAtString = sqlite3_column_text(stmt, 9).flatMap { String(cString: $0) }
         let isArchived = sqlite3_column_int(stmt, 10) == 1
         let recurrenceRule = sqlite3_column_text(stmt, 11).flatMap { String(cString: $0) }
-        sqlite3_finalize(stmt)
+        let isMarkedForDeletion = sqlite3_column_int(stmt, 12) == 1
+        let deletionScheduledAtString = sqlite3_column_text(stmt, 13).flatMap { String(cString: $0) }
         let date = ISO8601DateFormatter().date(from: dateString) ?? Date()
         let createdAt = ISO8601DateFormatter().date(from: createdAtString) ?? Date()
         let completedAt = completedAtString.flatMap {
             ISO8601DateFormatter().date(from: $0)
         }
+        let deletionScheduledAt = deletionScheduledAtString.flatMap {
+            ISO8601DateFormatter().date(from: $0)
+        }
+        sqlite3_finalize(stmt)
         return Note(
             id: id,
             parentId: parentId,
@@ -270,24 +298,28 @@ class DatabaseManager {
             createdAt: createdAt,
             completedAt: completedAt,
             isArchived: isArchived,
-            recurrenceRule: recurrenceRule
+            recurrenceRule: recurrenceRule,
+            isMarkedForDeletion: isMarkedForDeletion,
+            deletionScheduledAt: deletionScheduledAt
         )
     }
 
     func updateNote(_ note: Note) {
         let sql = """
         UPDATE Notes SET
-          parentId        = ?,
-          title           = ?,
-          description     = ?,
-          date            = ?,
-          isCompleted     = ?,
+          parentId = ?,
+          title = ?,
+          description = ?,
+          date = ?,
+          isCompleted = ?,
           isAlarmScheduled = ?,
-          alarmID         = ?,
-          createdAt       = ?,
-          completedAt     = ?,
-          isArchived      = ?,
-          recurrenceRule  = ?
+          alarmID = ?,
+          createdAt = ?,
+          completedAt = ?,
+          isArchived = ?,
+          recurrenceRule = ?,
+          isMarkedForDeletion = ?,
+          deletionScheduledAt = ?
         WHERE id = ?
         """
         var stmt: OpaquePointer?
@@ -299,10 +331,7 @@ class DatabaseManager {
             }
             sqlite3_bind_text(stmt, 2, (note.title as NSString).utf8String, -1, nil)
             sqlite3_bind_text(stmt, 3, (note.description as NSString).utf8String, -1, nil)
-            sqlite3_bind_text(stmt, 4,
-                (ISO8601DateFormatter().string(from: note.date) as NSString).utf8String,
-                -1, nil
-            )
+            sqlite3_bind_text(stmt, 4, (ISO8601DateFormatter().string(from: note.date) as NSString).utf8String, -1, nil)
             sqlite3_bind_int(stmt, 5, note.isCompleted ? 1 : 0)
             sqlite3_bind_int(stmt, 6, note.isAlarmScheduled ? 1 : 0)
             if let aid = note.alarmID?.uuidString {
@@ -310,15 +339,9 @@ class DatabaseManager {
             } else {
                 sqlite3_bind_null(stmt, 7)
             }
-            sqlite3_bind_text(stmt, 8,
-                (ISO8601DateFormatter().string(from: note.createdAt) as NSString).utf8String,
-                -1, nil
-            )
+            sqlite3_bind_text(stmt, 8, (ISO8601DateFormatter().string(from: note.createdAt) as NSString).utf8String, -1, nil)
             if let comp = note.completedAt {
-                sqlite3_bind_text(stmt, 9,
-                    (ISO8601DateFormatter().string(from: comp) as NSString).utf8String,
-                    -1, nil
-                )
+                sqlite3_bind_text(stmt, 9, (ISO8601DateFormatter().string(from: comp) as NSString).utf8String, -1, nil)
             } else {
                 sqlite3_bind_null(stmt, 9)
             }
@@ -328,8 +351,14 @@ class DatabaseManager {
             } else {
                 sqlite3_bind_null(stmt, 11)
             }
-            sqlite3_bind_int(stmt, 12, note.id)
-            _ = sqlite3_step(stmt)
+            sqlite3_bind_int(stmt, 12, note.isMarkedForDeletion ? 1 : 0)
+            if let del = note.deletionScheduledAt {
+                sqlite3_bind_text(stmt, 13, (ISO8601DateFormatter().string(from: del) as NSString).utf8String, -1, nil)
+            } else {
+                sqlite3_bind_null(stmt, 13)
+            }
+            sqlite3_bind_int(stmt, 14, note.id)
+            sqlite3_step(stmt)
         }
         sqlite3_finalize(stmt)
     }
@@ -339,7 +368,7 @@ class DatabaseManager {
         var stmt: OpaquePointer?
         if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
             sqlite3_bind_int(stmt, 1, id)
-            _ = sqlite3_step(stmt)
+            sqlite3_step(stmt)
         }
         sqlite3_finalize(stmt)
     }
@@ -354,7 +383,6 @@ class DatabaseManager {
             case .title:   return "title COLLATE NOCASE"
             }
         }()
-
         let whereClause: String = {
             switch category {
             case .overdue:
@@ -389,11 +417,11 @@ class DatabaseManager {
                 return "isArchived = 1"
             }
         }()
-
         let sql = """
         SELECT id, parentId, title, description, date,
                isCompleted, isAlarmScheduled, alarmID,
-               createdAt, completedAt, isArchived, recurrenceRule
+               createdAt, completedAt, isArchived, recurrenceRule,
+               isMarkedForDeletion, deletionScheduledAt
           FROM Notes
          WHERE \(whereClause)
          ORDER BY \(orderClause);
@@ -432,9 +460,14 @@ class DatabaseManager {
                 let completedAtString = sqlite3_column_text(stmt, 9).flatMap { String(cString: $0) }
                 let isArchived = sqlite3_column_int(stmt, 10) == 1
                 let recurrenceRule = sqlite3_column_text(stmt, 11).flatMap { String(cString: $0) }
+                let isMarkedForDeletion = sqlite3_column_int(stmt, 12) == 1
+                let deletionScheduledAtString = sqlite3_column_text(stmt, 13).flatMap { String(cString: $0) }
                 let date = ISO8601DateFormatter().date(from: dateString) ?? Date()
                 let createdAt = ISO8601DateFormatter().date(from: createdAtString) ?? Date()
                 let completedAt = completedAtString.flatMap {
+                    ISO8601DateFormatter().date(from: $0)
+                }
+                let deletionScheduledAt = deletionScheduledAtString.flatMap {
                     ISO8601DateFormatter().date(from: $0)
                 }
                 result.append(
@@ -450,7 +483,9 @@ class DatabaseManager {
                         createdAt: createdAt,
                         completedAt: completedAt,
                         isArchived: isArchived,
-                        recurrenceRule: recurrenceRule
+                        recurrenceRule: recurrenceRule,
+                        isMarkedForDeletion: isMarkedForDeletion,
+                        deletionScheduledAt: deletionScheduledAt
                     )
                 )
             }

@@ -18,5 +18,9 @@ struct Note: Identifiable, Codable, Equatable {
     var createdAt: Date = Date()
     var completedAt: Date? = nil
     var isArchived: Bool = false
+    var archivedAt: Date? = nil
+    var isAutoArchived: Bool = false
     var recurrenceRule: String? = nil
+    var isMarkedForDeletion: Bool = false
+    var deletionScheduledAt: Date? = nil
 }

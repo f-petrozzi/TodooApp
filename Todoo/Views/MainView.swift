@@ -13,87 +13,98 @@ extension Int32: @retroactive Identifiable {
 
 struct MainView: View {
     @StateObject var viewModel: NoteViewModel
-    
+
     @State private var showingAddNote = false
     @State private var showingGenerate = false
     @State private var showingCategoryPicker = false
     @State private var currentParentId: Int32? = nil
     @State private var expandedParents = Set<Int32>()
     @State private var showHelpOverlay = false
-    
+
     @State private var isSearching = false
     @FocusState private var searchFieldIsFocused: Bool
-    
+
+    @State private var showDeletePopup = false
+    @State private var notesToDelete = [Note]()
+
     var body: some View {
-        NavigationView {
-            contentList
-                .navigationTitle(isSearching ? "" : "Todoo")
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        HStack(spacing: 12) {
-                            Button {
-                                showingCategoryPicker = true
-                            } label: {
-                                Image(systemName: "line.horizontal.3.decrease.circle")
-                            }
-                            
-                            if isSearching {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "magnifyingglass")
-                                    TextField("Search notes", text: $viewModel.searchText)
-                                        .textFieldStyle(.plain)
-                                        .focused($searchFieldIsFocused)
-                                    Button("Cancel") {
-                                        withAnimation {
-                                            isSearching = false
-                                            viewModel.searchText = ""
-                                        }
-                                    }
-                                    .font(.subheadline)
-                                }
-                                .padding(.horizontal, 8)
-                                .frame(height: 36)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(Color(.systemBackground))
-                                )
-                                .onAppear { searchFieldIsFocused = true }
-                            } else {
+        ZStack {
+            NavigationView {
+                contentList
+                    .navigationTitle(isSearching ? "" : "Todoo")
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            HStack(spacing: 12) {
                                 Button {
-                                    withAnimation { isSearching = true }
+                                    showingCategoryPicker = true
                                 } label: {
-                                    Image(systemName: "magnifyingglass")
+                                    Image(systemName: "line.horizontal.3.decrease.circle")
+                                }
+                                if isSearching {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "magnifyingglass")
+                                        TextField("Search notes", text: $viewModel.searchText)
+                                            .textFieldStyle(.plain)
+                                            .focused($searchFieldIsFocused)
+                                        Button("Cancel") {
+                                            withAnimation {
+                                                isSearching = false
+                                                viewModel.searchText = ""
+                                            }
+                                        }
+                                        .font(.subheadline)
+                                    }
+                                    .padding(.horizontal, 8)
+                                    .frame(height: 36)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(Color(.systemBackground))
+                                    )
+                                    .onAppear { searchFieldIsFocused = true }
+                                } else {
+                                    Button {
+                                        withAnimation { isSearching = true }
+                                    } label: {
+                                        Image(systemName: "magnifyingglass")
+                                    }
                                 }
                             }
                         }
-                    }
-                    
-                    ToolbarItemGroup(placement: .navigationBarTrailing) {
-                        Button { showingGenerate = true } label: {
-                            Image(systemName: "sparkles").iconButtonStyle()
+                        ToolbarItemGroup(placement: .navigationBarTrailing) {
+                            Button { showingGenerate = true } label: {
+                                Image(systemName: "sparkles").iconButtonStyle()
+                            }
+                            Button { showingAddNote = true } label: {
+                                Image(systemName: "plus").iconButtonStyle()
+                            }
                         }
-                        Button { showingAddNote = true } label: {
-                            Image(systemName: "plus").iconButtonStyle()
+                    }
+                    .accentColor(Theme.accent)
+                    .sheet(isPresented: $showingCategoryPicker) {
+                        CategoryPickerView(
+                            selectedCategories: $viewModel.selectedCategories,
+                            sortOption:         $viewModel.currentSort
+                        ) {
+                            showingCategoryPicker = false
+                            viewModel.fetchNotes()
                         }
                     }
+            }
+            if showDeletePopup {
+                Color.black.opacity(0.3).ignoresSafeArea()
+                DeleteNoteView(
+                    notes: notesToDelete,
+                    viewModel: viewModel
+                ) {
+                    showDeletePopup = false
+                    viewModel.fetchNotes()
                 }
-                .accentColor(Theme.accent)
-                .sheet(isPresented: $showingCategoryPicker) {
-                    CategoryPickerView(
-                        selectedCategories: $viewModel.selectedCategories,
-                        sortOption:         $viewModel.currentSort
-                    ) {
-                        showingCategoryPicker = false
-                        viewModel.fetchNotes()
-                    }
-                }
+                .frame(maxWidth: 350, maxHeight: 500)
+                .background(RoundedRectangle(cornerRadius: 16).fill(Color(.systemBackground)))
+                .shadow(radius: 20)
+                .padding()
+            }
         }
-        .onAppear { viewModel.fetchNotes() }
-        .onReceive(
-            NotificationCenter.default.publisher(
-                for: UIApplication.didBecomeActiveNotification
-            )
-        ) { _ in viewModel.fetchNotes() }
         .sheet(isPresented: $showingAddNote) {
             AddNoteView(viewModel: viewModel, parentId: nil)
                 .popupStyle()
@@ -112,8 +123,20 @@ struct MainView: View {
                 .presentationDetents([.medium])
                 .presentationDragIndicator(.hidden)
         }
+        .onAppear {
+            viewModel.fetchNotes()
+            checkPendingDeletions()
+        }
+        .onReceive(
+            NotificationCenter.default.publisher(
+                for: UIApplication.didBecomeActiveNotification
+            )
+        ) { _ in
+            viewModel.fetchNotes()
+            checkPendingDeletions()
+        }
     }
-    
+
     private var contentList: some View {
         List {
             if viewModel.searchText.isEmpty {
@@ -181,7 +204,7 @@ struct MainView: View {
         .background(Theme.background)
         .animation(.default, value: viewModel.searchText)
     }
-    
+
     @ViewBuilder
     private func sectionView(for category: FilterCategory) -> some View {
         Section(
@@ -191,10 +214,10 @@ struct MainView: View {
         ) {
             let notesForCategory = viewModel.sectionedNotes[category] ?? []
             let parents = notesForCategory.filter { $0.parentId == nil }
-            
+
             ForEach(parents) { parent in
                 let children = viewModel.allNotes.filter { $0.parentId == parent.id }
-                
+
                 NoteRow(
                     note: parent,
                     children: children,
@@ -207,7 +230,7 @@ struct MainView: View {
                 .listRowInsets(.init(top: 2, leading: 16, bottom: 2, trailing: 16))
                 .listRowBackground(Color.clear)
                 .listRowSeparator(.hidden, edges: .all)
-                
+
                 if expandedParents.contains(parent.id) {
                     ForEach(children) { child in
                         HStack {
@@ -244,6 +267,18 @@ struct MainView: View {
                     }
                 }
             }
+        }
+    }
+
+    private func checkPendingDeletions() {
+        let now = Date()
+        let due = viewModel.allNotes.filter {
+            $0.isMarkedForDeletion &&
+            ($0.deletionScheduledAt ?? Date.distantFuture) <= now
+        }
+        if !due.isEmpty {
+            notesToDelete = due
+            showDeletePopup = true
         }
     }
 }

@@ -11,9 +11,8 @@ class NoteViewModel: ObservableObject {
     @Published var sectionedNotes: [FilterCategory: [Note]] = [:]
     @Published var selectedCategories: Set<FilterCategory> = Set(FilterCategory.allCases)
     @Published var currentSort: DatabaseManager.SortOption = .alarm
-    
     @Published var searchText: String = ""
-    
+
     var searchResults: [Note] {
         guard !searchText.isEmpty else { return [] }
         return allNotes.filter {
@@ -28,7 +27,6 @@ class NoteViewModel: ObservableObject {
 
     func fetchNotes() {
         allNotes = DatabaseManager.shared.getAllNotes()
-
         var dict: [FilterCategory: [Note]] = [:]
         for category in selectedCategories {
             let notesForCategory = DatabaseManager.shared.fetchNotes(
@@ -126,6 +124,8 @@ class NoteViewModel: ObservableObject {
     func archive(note: Note) {
         var updated = note
         updated.isArchived = true
+        updated.isMarkedForDeletion = false
+        updated.deletionScheduledAt = nil
         DatabaseManager.shared.updateNote(updated)
         fetchNotes()
     }
