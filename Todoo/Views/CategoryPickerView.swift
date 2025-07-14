@@ -8,57 +8,65 @@ import SwiftUI
 
 struct CategoryPickerView: View {
     @Binding var selectedCategories: Set<FilterCategory>
+    @Binding var categoryOrder: [FilterCategory]
     @Binding var sortOption: DatabaseManager.SortOption
     let onDone: () -> Void
 
+    @State private var editMode: EditMode = .inactive
+
     var body: some View {
-        VStack(spacing: 16) {
-            Text("Filter Categories")
-                .font(.headline)
-
-            ForEach(FilterCategory.allCases) { category in
-                HStack {
-                    Text(category.displayName)
-                    Spacer()
-                    if selectedCategories.contains(category) {
-                        Image(systemName: "checkmark")
+        NavigationView {
+            List {
+                Section(header: Text("Filter Categories")) {
+                    ForEach(categoryOrder, id: \.self) { category in
+                        HStack {
+                            Text(category.displayName)
+                            Spacer()
+                            if selectedCategories.contains(category) {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            if selectedCategories.contains(category) {
+                                selectedCategories.remove(category)
+                            } else {
+                                selectedCategories.insert(category)
+                            }
+                        }
                     }
+                    .onMove(perform: moveCategory)
                 }
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    if selectedCategories.contains(category) {
-                        selectedCategories.remove(category)
-                    } else {
-                        selectedCategories.insert(category)
+
+                Section(header: Text("Sort by")) {
+                    Picker("", selection: $sortOption) {
+                        Text("Alarm").tag(DatabaseManager.SortOption.alarm)
+                        Text("Created").tag(DatabaseManager.SortOption.created)
+                        Text("Title").tag(DatabaseManager.SortOption.title)
                     }
+                    .pickerStyle(SegmentedPickerStyle())
                 }
             }
-
-            Divider()
-
-            Text("Sort by")
-                .font(.headline)
-
-            Picker("", selection: $sortOption) {
-                Text("Alarm").tag(DatabaseManager.SortOption.alarm)
-                Text("Created").tag(DatabaseManager.SortOption.created)
-                Text("Title").tag(DatabaseManager.SortOption.title)
+            .listStyle(InsetGroupedListStyle())
+            .navigationTitle("Categories")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    EditButton()
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done", action: onDone)
+                }
             }
-            .pickerStyle(SegmentedPickerStyle())
-
-            Divider()
-
-            Button("Done") {
-                onDone()
+            .environment(\.editMode, $editMode)
+            .onLongPressGesture {
+                withAnimation {
+                    editMode = .active
+                }
             }
-            .padding(.top)
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemBackground))
-                .shadow(radius: 4)
-        )
-        .padding()
+    }
+
+    private func moveCategory(from source: IndexSet, to destination: Int) {
+        categoryOrder.move(fromOffsets: source, toOffset: destination)
     }
 }

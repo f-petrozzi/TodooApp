@@ -9,9 +9,14 @@ import Foundation
 class NoteViewModel: ObservableObject {
     @Published var allNotes: [Note] = []
     @Published var sectionedNotes: [FilterCategory: [Note]] = [:]
-    @Published var selectedCategories: Set<FilterCategory> = Set(FilterCategory.allCases)
+    
+    @Published var selectedCategories: Set<FilterCategory>
+    @Published var categoryOrder: [FilterCategory]
+    
     @Published var currentSort: DatabaseManager.SortOption = .alarm
     @Published var searchText: String = ""
+    
+    private let categoryOrderKey = "categoryOrder"
 
     var searchResults: [Note] {
         guard !searchText.isEmpty else { return [] }
@@ -22,18 +27,30 @@ class NoteViewModel: ObservableObject {
     }
 
     init() {
+        let stored = UserDefaults.standard.stringArray(forKey: categoryOrderKey) ?? []
+        let saved  = stored.compactMap { FilterCategory(rawValue: $0) }
+        let initialOrder    = saved.isEmpty ? FilterCategory.allCases : saved
+        let initialSelected = Set(initialOrder)
+
+        categoryOrder      = initialOrder
+        selectedCategories = initialSelected
+
         fetchNotes()
+    }
+
+    private func saveCategoryOrder() {
+        let raw = categoryOrder.map(\.rawValue)
+        UserDefaults.standard.set(raw, forKey: categoryOrderKey)
     }
 
     func fetchNotes() {
         allNotes = DatabaseManager.shared.getAllNotes()
         var dict: [FilterCategory: [Note]] = [:]
         for category in selectedCategories {
-            let notesForCategory = DatabaseManager.shared.fetchNotes(
+            dict[category] = DatabaseManager.shared.fetchNotes(
                 category: category,
                 sort: currentSort
             )
-            dict[category] = notesForCategory
         }
         sectionedNotes = dict
     }
@@ -45,6 +62,12 @@ class NoteViewModel: ObservableObject {
             selectedCategories.insert(category)
         }
         fetchNotes()
+    }
+    
+    // Called by CategoryPickerView’s onMove
+    func moveCategory(from source: IndexSet, to destination: Int) {
+        categoryOrder.move(fromOffsets: source, toOffset: destination)
+        saveCategoryOrder()
     }
 
     func setSortOption(_ sort: DatabaseManager.SortOption) {
@@ -58,7 +81,7 @@ class NoteViewModel: ObservableObject {
         date: Date,
         parentId: Int32?
     ) {
-        let newNote = Note(
+        var newNote = Note(
             id: 0,
             parentId: parentId,
             title: title,
@@ -73,11 +96,7 @@ class NoteViewModel: ObservableObject {
     func toggleComplete(note: Note) {
         var updated = note
         updated.isCompleted.toggle()
-        if updated.isCompleted {
-            updated.completedAt = Date()
-        } else {
-            updated.completedAt = nil
-        }
+        updated.completedAt = updated.isCompleted ? Date() : nil
         DatabaseManager.shared.updateNote(updated)
         fetchNotes()
     }
@@ -98,29 +117,6 @@ class NoteViewModel: ObservableObject {
         fetchNotes()
     }
 
-    func toggleAlarm(for note: Note) {
-        Task { @MainActor in
-            var updated = note
-            if updated.isAlarmScheduled, let aid = updated.alarmID {
-                try? await AlarmService.shared.cancelAlarm(alarmID: aid)
-                updated.isAlarmScheduled = false
-            } else if updated.date > Date() {
-                try? await AlarmService.shared.requestAuthorization()
-                let id = UUID()
-                try? await AlarmService.shared.scheduleAlarm(
-                    noteID: updated.id,
-                    alarmID: id,
-                    date: updated.date,
-                    title: updated.title
-                )
-                updated.isAlarmScheduled = true
-                updated.alarmID = id
-            }
-            DatabaseManager.shared.updateNote(updated)
-            fetchNotes()
-        }
-    }
-
     func archive(note: Note) {
         var updated = note
         updated.isArchived = true
@@ -130,18 +126,19 @@ class NoteViewModel: ObservableObject {
         fetchNotes()
     }
 
-    func cleanupCompletedNotes() {
-        DatabaseManager.shared.cleanupCompletedNotes()
+    func delete(note: Note) {
+        var toDelete = note
+        if toDelete.isAlarmScheduled, let aid = toDelete.alarmID {
+            Task { @MainActor in
+                try? await AlarmService.shared.cancelAlarm(alarmID: aid)
+            }
+        }
+        DatabaseManager.shared.deleteNote(id: toDelete.id)
         fetchNotes()
     }
 
-    func delete(note: Note) {
-        Task { @MainActor in
-            if note.isAlarmScheduled, let aid = note.alarmID {
-                try? await AlarmService.shared.cancelAlarm(alarmID: aid)
-            }
-            DatabaseManager.shared.deleteNote(id: note.id)
-            fetchNotes()
-        }
+    func cleanupCompletedNotes() {
+        DatabaseManager.shared.cleanupCompletedNotes()
+        fetchNotes()
     }
 }

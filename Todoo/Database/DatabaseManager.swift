@@ -143,9 +143,11 @@ class DatabaseManager {
            SET isArchived = 1,
                isMarkedForDeletion = 1,
                deletionScheduledAt = strftime('%Y-%m-%dT%H:%M:%SZ','now','+1 day')
-         WHERE datetime(date, 'localtime') < datetime('now','localtime','-24 hours')
+         WHERE (
+                   datetime(date,        'localtime') < datetime('now','localtime','-24 hours')
+                OR datetime(completedAt, 'localtime') < datetime('now','localtime','-24 hours')
+               )
            AND isArchived = 0
-           AND isCompleted = 0
            AND recurrenceRule IS NULL
         """
         execute(sql: sql)

@@ -83,7 +83,8 @@ struct MainView: View {
                     .sheet(isPresented: $showingCategoryPicker) {
                         CategoryPickerView(
                             selectedCategories: $viewModel.selectedCategories,
-                            sortOption:         $viewModel.currentSort
+                            categoryOrder:    $viewModel.categoryOrder,
+                            sortOption:       $viewModel.currentSort
                         ) {
                             showingCategoryPicker = false
                             viewModel.fetchNotes()
@@ -141,9 +142,8 @@ struct MainView: View {
         List {
             if viewModel.searchText.isEmpty {
                 ForEach(
-                    FilterCategory.allCases
-                        .filter { viewModel.selectedCategories.contains($0) }
-                        .sorted { $0.displayName < $1.displayName },
+                    viewModel.categoryOrder
+                        .filter { viewModel.selectedCategories.contains($0) },
                     id: \.self
                 ) { category in
                     sectionView(for: category)
