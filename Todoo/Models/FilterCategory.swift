@@ -7,6 +7,7 @@
 import Foundation
 
 enum FilterCategory: String, CaseIterable, Identifiable {
+    case overdue
     case today
     case reminder
     case upcoming
@@ -17,6 +18,7 @@ enum FilterCategory: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
+        case .overdue:  return "Overdue"
         case .today:    return "Today"
         case .reminder: return "Reminder"
         case .upcoming: return "Upcoming"

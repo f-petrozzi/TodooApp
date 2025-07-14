@@ -347,20 +347,25 @@ class DatabaseManager {
     enum SortOption { case alarm, created, title }
 
     func fetchNotes(category: FilterCategory, sort: SortOption) -> [Note] {
-        let order: String = {
+        let orderClause: String = {
             switch sort {
             case .alarm:   return "date COLLATE NOCASE"
             case .created: return "createdAt DESC"
             case .title:   return "title COLLATE NOCASE"
             }
         }()
+
         let whereClause: String = {
             switch category {
+            case .overdue:
+                return """
+                datetime(date, 'localtime') < datetime('now','localtime')
+                AND isCompleted = 0
+                AND isArchived  = 0
+                """
             case .today:
                 return """
-                date BETWEEN
-                  date('now','start of day')
-                  AND date('now','start of day','+1 day')
+                date(date, 'localtime') = date('now','localtime')
                 AND isCompleted = 0
                 AND isArchived  = 0
                 """
@@ -368,7 +373,8 @@ class DatabaseManager {
                 return "recurrenceRule IS NOT NULL AND isArchived = 0"
             case .upcoming:
                 return """
-                date > date('now','start of day','+1 day')
+                datetime(date, 'localtime') 
+                  >= datetime('now','localtime','start of day','+1 day')
                 AND isCompleted = 0
                 AND isArchived  = 0
                 """
@@ -376,19 +382,21 @@ class DatabaseManager {
                 return """
                 isCompleted = 1
                 AND isArchived = 0
-                AND completedAt >= datetime('now','-1 day')
+                AND datetime(completedAt, 'localtime')
+                  >= datetime('now','localtime','-1 day')
                 """
             case .archived:
                 return "isArchived = 1"
             }
         }()
+
         let sql = """
         SELECT id, parentId, title, description, date,
                isCompleted, isAlarmScheduled, alarmID,
                createdAt, completedAt, isArchived, recurrenceRule
-        FROM Notes
+          FROM Notes
          WHERE \(whereClause)
-        ORDER BY \(order);
+         ORDER BY \(orderClause);
         """
         return query(sql: sql)
     }
@@ -408,7 +416,6 @@ class DatabaseManager {
         var stmt: OpaquePointer?
         if sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK {
             while sqlite3_step(stmt) == SQLITE_ROW {
-                // similar mapping as in getAllNotes()
                 let id = sqlite3_column_int(stmt, 0)
                 let parentId: Int32? = sqlite3_column_type(stmt, 1) != SQLITE_NULL
                     ? sqlite3_column_int(stmt, 1)
