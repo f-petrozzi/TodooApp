@@ -1,6 +1,6 @@
 # Todoo
 
-Todoo is a personal note and task manager built in Swift for iOS. It allows users to quickly add, organize, and complete notes or sub-tasks. The app features offline support with a local SQLite database, AI-powered note generation, Siri integration, and alarm scheduling through Apple Shortcuts.
+A simple iOS notes and tasks app with offline storage, AlarmKit alarms, and Siri shortcuts.
 
 ## Key Features
 
@@ -32,8 +32,6 @@ Todoo is a personal note and task manager built in Swift for iOS. It allows user
 6. For alarm features:
 - Set up a Shortcut named `ScheduleNoteAlarm` that accepts `Text` input and creates an iOS alarm.
 - Follow in-app instructions to link your alarm shortcut.
-
-> Note: Alarm scheduling only works on real devices due to Apple Shortcuts limitations in the simulator.
 
 ## Future Improvements
 
